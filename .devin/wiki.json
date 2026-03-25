@@ -39,7 +39,8 @@
       "devin/playbooks/**/*.md",
       "docs/**/*.md",
       "analyses/**/*.json",
-      "DevinStorage/**/*.md"
+      "DevinStorage/**/*.md",
+      "DevinStorage/schedules/*.json"
     ],
     "exclude": [
       "devin/secrets/**",
@@ -75,6 +76,10 @@
     {
       "name": "AzureDevOps Documentation",
       "files": ["DevinStorage/AzureDevOps Documentation/**/*.md"]
+    },
+    {
+      "name": "Scheduled Task State",
+      "files": ["DevinStorage/schedules/*.json"]
     }
   ]
 }

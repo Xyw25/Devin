@@ -1,6 +1,9 @@
 # Scheduling & Automation Guide
 
+> Version: 1.0.0
 > Created: 2026-03-25
+> Last updated: 2026-03-25
+> Sources re-verified: 2026-03-25
 > Sources accessed: 2026-03-25
 > Sources:
 > - [Devin Docs — Scheduled Sessions](https://docs.devin.ai/product-guides/scheduled-sessions)

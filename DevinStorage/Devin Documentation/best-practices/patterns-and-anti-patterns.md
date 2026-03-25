@@ -1,6 +1,9 @@
 # Patterns and Anti-Patterns — Detailed Reference
 
+> Version: 1.0.0
 > Created: 2026-03-25
+> Last updated: 2026-03-25
+> Sources re-verified: 2026-03-25
 > Sources accessed: 2026-03-25
 > Sources:
 > - Internal repo analysis (this repository's conventions and architecture)

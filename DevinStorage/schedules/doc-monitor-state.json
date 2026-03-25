@@ -1,0 +1,112 @@
+{
+  "taskName": "doc-monitor",
+  "description": "Daily Devin Documentation monitoring and update task",
+  "lastCheckDate": "2026-03-25T00:00:00Z",
+  "lastCheckVersion": 1,
+  "schedule": "0 9 * * *",
+  "sources": [
+    {
+      "url": "https://docs.devin.ai/release-notes",
+      "name": "Devin Release Notes",
+      "mapsTo": ["best-practices/master-guide.md", "references/sources.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/api-reference/release-notes",
+      "name": "Devin API Release Notes",
+      "mapsTo": ["references/sources.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/product-guides/knowledge",
+      "name": "Knowledge Items Guide",
+      "mapsTo": ["guides/knowledge-writing-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/product-guides/creating-playbooks",
+      "name": "Playbooks Guide",
+      "mapsTo": ["guides/playbook-writing-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/product-guides/scheduled-sessions",
+      "name": "Scheduled Sessions Guide",
+      "mapsTo": ["guides/scheduling-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/product-guides/session-insights",
+      "name": "Session Insights",
+      "mapsTo": ["guides/session-sizing-guide.md", "references/acu-reference.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/essential-guidelines/good-vs-bad-instructions",
+      "name": "Good vs Bad Instructions",
+      "mapsTo": ["best-practices/master-guide.md", "best-practices/patterns-and-anti-patterns.md", "best-practices/prompt-engineering.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/essential-guidelines/when-to-use-devin",
+      "name": "When to Use Devin",
+      "mapsTo": ["best-practices/master-guide.md", "guides/session-sizing-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/work-with-devin/deepwiki",
+      "name": "DeepWiki Documentation",
+      "mapsTo": ["guides/deepwiki-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://docs.devin.ai/onboard-devin/repo-setup",
+      "name": "Repo Setup Guide",
+      "mapsTo": ["guides/security-guide.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://cognition.ai/blog/1",
+      "name": "Cognition Blog (Latest)",
+      "mapsTo": ["best-practices/master-guide.md", "references/sources.md"],
+      "lastChecked": "2026-03-25",
+      "lastKnownState": ""
+    }
+  ],
+  "documentVersions": {
+    "best-practices/master-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "best-practices/patterns-and-anti-patterns.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "best-practices/prompt-engineering.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/knowledge-writing-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/playbook-writing-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/session-sizing-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/scheduling-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/deepwiki-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "guides/security-guide.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "references/session-architecture.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "references/acu-reference.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" },
+    "references/sources.md": { "version": "1.0.0", "lastUpdated": "2026-03-25" }
+  },
+  "changesFound": [],
+  "pendingNewTopics": [],
+  "runHistory": [
+    {
+      "date": "2026-03-25",
+      "version": 1,
+      "result": "initial",
+      "changesDetected": 0,
+      "filesUpdated": 0,
+      "acuUsed": 0
+    }
+  ]
+}

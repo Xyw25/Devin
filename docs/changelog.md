@@ -47,3 +47,16 @@ All notable changes to scripts and documentation in this repository.
   - field-reference.md, api-gotchas.md (20 gotchas G1-G20), endpoint-catalog.md
 - Updated `DevinStorage/README.md` — now indexes both documentation sections
 - Updated `.devin/wiki.json` — split into separate Devin and ADO wiki sections
+
+## 2026-03-25 — Daily Doc Monitor Playbook
+
+- Added `devin/playbooks/session-doc-monitor.md` — daily Devin documentation monitoring playbook
+  - Checks 11 source URLs (docs.devin.ai, cognition.ai/blog) for changes
+  - Updates local files in `DevinStorage/Devin Documentation/` when changes detected
+  - Maintains versioned state in `DevinStorage/schedules/doc-monitor-state.json`
+  - ACU budget: <= 1 (no changes), <= 5 (with updates)
+  - Schedule: daily at 9am UTC (`0 9 * * *`)
+- Added `DevinStorage/schedules/doc-monitor-state.json` — initial state file with source mappings
+- Added version headers (Version, Last updated, Sources re-verified) to all 12 Devin Documentation files
+- Updated `DevinStorage/Devin Documentation/references/sources.md` — added monitoring URLs
+- Updated `.devin/wiki.json` — added schedules to indexing and sections

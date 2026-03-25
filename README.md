@@ -53,7 +53,7 @@ This repo has five jobs:
 │   │   ├── ado-pr-comments.md         <- PR comment threads, inline code comments
 │   │   └── environment.md             <- Org URL, project, wiki ID, area paths
 │   │
-│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (10 playbooks)
+│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (9 playbooks)
 │   │   ├── session-0-precheck.md      <- Gate check: tag, state, description
 │   │   ├── session-a-code-analysis.md <- Analyze codebase, write JSON
 │   │   ├── session-b-documentation.md <- Create/update Wiki pages
@@ -62,8 +62,7 @@ This repo has five jobs:
 │   │   ├── session-doc-monitor.md     <- Daily doc source monitoring
 │   │   ├── session-pr-creation.md     <- PR lifecycle with enriched context
 │   │   ├── session-bug-triage-deep.md <- Deep bug analysis with attachments
-│   │   ├── session-attachment-handler.md <- Attachment operations
-│   │   └── session-ado-interaction-catalog.md <- Quick reference for all 28 operations
+│   │   └── session-attachment-handler.md <- Attachment operations
 │   │
 │   └── secrets/
 │       └── secrets-reference.md       <- Naming conventions only. No values here.
@@ -111,11 +110,20 @@ This repo has five jobs:
 ├── DevinStorage/                      <- Documentation hub
 │   ├── README.md                      <- Documentation index
 │   ├── Devin Documentation/           <- 15 files: best practices, guides, references
-│   ├── AzureDevOps Documentation/     <- 17 files: API guides, operations, references
+│   ├── AzureDevOps Documentation/     <- 18 files: API guides, operations, references
 │   └── schedules/                     <- State files for scheduled tasks
+│
+├── schemas/                           <- Output format definitions
+│   ├── analysis-json.schema.md        <- JSON structure for analyses/ files
+│   ├── wiki-functionality-page.template.md <- Wiki page markdown template
+│   ├── wiki-functionality-index-row.template.md <- Index table row format
+│   ├── work-item-comment.template.md  <- HTML comment templates per session
+│   ├── bug-findings-comment.template.md <- Bug triage findings format
+│   └── pr-description.template.md     <- PR description markdown format
 │
 ├── docs/
 │   ├── ado-api-reference.md           <- Canonical ADO API notes for this org
+│   ├── ado-operation-reference.md     <- Quick reference for all 28 ADO operations
 │   ├── field-reference.md             <- Work item fields, types, allowed values
 │   ├── error-catalog.md               <- Every error encountered and its resolution
 │   └── changelog.md                   <- Script and doc changes over time

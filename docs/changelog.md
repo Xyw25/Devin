@@ -117,7 +117,43 @@ All notable changes to scripts and documentation in this repository.
 - NEW: `operations/bug-creation-workflow.md` — Bug creation with repro steps
 
 ### Updated Infrastructure
-- `README.md` — reflects 28 operations, 11 knowledge, 10 playbooks, 8 sessions
+- `README.md` — reflects 28 operations, 11 knowledge, 9 playbooks, 8 sessions
+
+## 2026-03-25 — Quality Audit Remediation
+
+### Scoring System
+- Introduced Devin Effectiveness Score (DES) — 5-dimension scoring for knowledge items and playbooks
+- Dimensions: Trigger Precision, Factual Density, Script Integration, Clarity, Self-Containment (knowledge)
+- Dimensions: Instruction Precision, Context Completeness, Guardrails, Structure, Deliverable Clarity (playbooks)
+
+### Output Schemas (6 new files)
+- `schemas/analysis-json.schema.md` — Full JSON structure for analyses/ files
+- `schemas/wiki-functionality-page.template.md` — Wiki page markdown template
+- `schemas/wiki-functionality-index-row.template.md` — Index table row format
+- `schemas/work-item-comment.template.md` — HTML comment templates per session type
+- `schemas/bug-findings-comment.template.md` — Bug triage findings format
+- `schemas/pr-description.template.md` — PR description markdown format
+
+### Knowledge Items (10 fixed)
+- Added trigger descriptions to 7 items (ado-auth, ado-work-items, ado-wiki, ado-tests, ado-pull-requests, ado-error-handling, environment)
+- Replaced raw curl/JSON blocks with script references in 6 items
+- Replaced duplicated content (case sensitivity, path separators) with api-gotchas.md cross-references
+- Improved trigger specificity for ado-attachments, ado-pr-comments, ado-repos
+
+### Playbooks (9 restructured)
+- Restructured 5 original playbooks (0, A, B, C, D) to standard 5-section format
+- Added Forbidden Actions, Required from User, Advice, Specifications sections
+- Added inline schema references to all artifact-producing playbooks
+- Removed ACU targets — replaced with concrete scope controls
+- Moved `session-ado-interaction-catalog.md` to `docs/ado-operation-reference.md` (reference doc, not a session)
+
+### Structural Fixes
+- Fixed dangling `add-inline-comment.sh` reference in `add-comment.sh` and `ado-pr-comments.md`
+- Fixed README file count (17 → 18 for AzureDevOps Documentation)
+- Fixed `grep -P` → `grep -E` in `check-api-versions.sh` for POSIX compatibility
+- Updated wiki.json to index schemas/
+- Updated master-guide.md with Section 15: Output Schemas
+- Updated playbook-writing-guide.md with Output Schema Requirement section and checklist item
 - `DevinStorage/README.md` — updated indexes for all new files
 - `AzureDevOps Documentation/README.md` — updated with 8 API guides, 6 operations, 3 references
 - `.devin/wiki.json` — added ADO Operations Coverage note, updated script count

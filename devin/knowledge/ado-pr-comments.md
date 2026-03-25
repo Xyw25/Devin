@@ -60,4 +60,4 @@ The body is simply `{"status": 2}` (using the integer status value). This is sep
 ## Scripts
 
 - `scripts/ado/pull-requests/add-comment.sh` — add a general comment thread
-- `scripts/ado/pull-requests/add-inline-comment.sh` — add an inline code comment with file anchor
+- For inline comments, use `add-comment.sh` with `threadContext` in the body (see the Inline Code Comment section above)

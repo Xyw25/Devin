@@ -283,3 +283,23 @@ discovery of project structure.
 - Use the default branch from repo metadata rather than assuming `main` or `master`
 - For cross-repo work, clone into separate directories and reference paths explicitly in prompts
 - Large repos may benefit from shallow clones (`--depth 1`) to save time in short sessions
+
+---
+
+## 15. Output Schemas
+
+> Added: 2026-03-25
+
+**Define the format for everything Devin produces.** Without schemas, Devin invents its own structure, and downstream sessions that consume those artifacts may fail.
+
+Schema files live in `schemas/` and define the exact structure for:
+- Analysis JSON files (`schemas/analysis-json.schema.md`)
+- Wiki pages (`schemas/wiki-functionality-page.template.md`)
+- Wiki index rows (`schemas/wiki-functionality-index-row.template.md`)
+- Work item comments (`schemas/work-item-comment.template.md`)
+- Bug triage findings (`schemas/bug-findings-comment.template.md`)
+- PR descriptions (`schemas/pr-description.template.md`)
+
+Every playbook that produces an artifact must reference its schema.
+
+**Detailed guide:** [Playbook Writing Guide — Output Schema Requirement](../guides/playbook-writing-guide.md)

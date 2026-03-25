@@ -44,6 +44,7 @@
       "docs/**/*.md",
       "analyses/**/*.json",
       "DevinStorage/**/*.md",
+      "schemas/**/*.md",
       "DevinStorage/schedules/*.json"
     ],
     "exclude": [
@@ -80,6 +81,10 @@
     {
       "name": "AzureDevOps Documentation",
       "files": ["DevinStorage/AzureDevOps Documentation/**/*.md"]
+    },
+    {
+      "name": "Output Schemas",
+      "files": ["schemas/*.md"]
     },
     {
       "name": "Scheduled Task State",

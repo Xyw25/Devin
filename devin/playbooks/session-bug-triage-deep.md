@@ -90,13 +90,8 @@ source scripts/ado/auth.sh "$ADO_PAT_WORKITEMS"
 bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" "$FINDINGS_HTML"
 ```
 
-Comment must include:
-1. **Functionality match** — which functionality area, confidence level
-2. **Likely root cause** — code path, recent changes, contributing factors
-3. **Attachment analysis** — what evidence was found in attachments
-4. **Test coverage gap** — what tests exist, what's missing, was this a regression
-5. **Suggested fix location** — specific files and methods to investigate
-6. **New test suggestions** — test cases that would prevent recurrence
+Comment must include all 6 sections defined in the findings template.
+Full format: see `schemas/bug-findings-comment.template.md`
 
 ### Step 8: Update DevinStorage
 

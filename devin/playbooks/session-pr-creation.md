@@ -63,6 +63,8 @@ PR description should include:
 - Work item reference
 - Test coverage status (from analysis JSON)
 
+Full PR description format: see `schemas/pr-description.template.md`
+
 ### Step 6: Add additional context as PR comment (if needed)
 
 ```bash
@@ -78,6 +80,8 @@ source scripts/ado/auth.sh "$ADO_PAT_WORKITEMS"
 bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
   "<p>PR created: <a href=\"${PR_URL}\">${PR_TITLE}</a></p>"
 ```
+
+Comment format: see `schemas/work-item-comment.template.md`
 
 ### Step 8: Update DevinStorage
 

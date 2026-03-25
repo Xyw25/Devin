@@ -16,7 +16,7 @@ echo "---"
 while IFS= read -r file; do
   # Find all api-version parameters
   while IFS= read -r match; do
-    VERSION=$(echo "$match" | grep -oP 'api-version=\K[0-9.]+(-preview[0-9.]*)?')
+    VERSION=$(echo "$match" | grep -oE 'api-version=[0-9.]+(-preview[0-9.]*)?'  | sed 's/api-version=//')
     if [ -n "$VERSION" ]; then
       # Allow 7.1-preview.* for comments API only
       if [[ "$VERSION" == "${PINNED_VERSION}" ]]; then

@@ -406,3 +406,29 @@ bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
 - [ ] Required inputs listed
 - [ ] File naming follows convention
 - [ ] Tested in at least one trial session
+- [ ] Output format defined (schema file in `schemas/` or inline example in Procedure)
+
+---
+
+## Output Schema Requirement
+
+Every playbook that produces an artifact (JSON file, Wiki page, work item comment, PR description) must define the expected output format. This prevents Devin from inventing its own structure.
+
+**Two options (use both when possible):**
+
+1. **Schema file** — create a template in `schemas/` with the full structure, field descriptions, and rules. Reference from the playbook: `Full format: see schemas/{file}.md`
+
+2. **Inline example** — include a brief (3-5 line) example in the Procedure step where the artifact is produced. This gives Devin immediate context without leaving the playbook.
+
+**Available schema files:**
+
+| Schema | Artifact | Used By |
+|--------|----------|---------|
+| `schemas/analysis-json.schema.md` | `analyses/{product}/{slug}.json` | Session A, D |
+| `schemas/wiki-functionality-page.template.md` | Wiki `/Functionalities/{slug}` | Session B, C, D |
+| `schemas/wiki-functionality-index-row.template.md` | Wiki `/FunctionalityIndex` row | Session B, C |
+| `schemas/work-item-comment.template.md` | Work item HTML comments | All sessions |
+| `schemas/bug-findings-comment.template.md` | Bug triage findings | Session BT |
+| `schemas/pr-description.template.md` | PR description markdown | Session PR |
+
+**Why this matters:** Without a defined output format, Devin will produce correct content in an unpredictable structure. Downstream sessions that consume these artifacts (e.g., Session B reading Session A's JSON) may fail to parse them.

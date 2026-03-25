@@ -2,7 +2,7 @@
 # add-comment.sh — POST a comment thread on a PR
 # Usage: bash scripts/ado/pull-requests/add-comment.sh <repo-id> <pr-id> <comment-text> [status]
 # status: "active" (default), "fixed", "pending", "wontFix", "closed"
-# For inline comments, use add-inline-comment.sh instead
+# For inline comments, add threadContext to the body (see devin/knowledge/ado-pr-comments.md)
 # Requires: ADO_ORG_URL, ADO_PROJECT, ADO_AUTH_HEADER (source auth.sh first)
 
 set -euo pipefail

@@ -1,6 +1,36 @@
 {
   "name": "DevinStorage",
   "description": "Devin Operations & ADO Best Practices — Knowledge, Playbooks, Scripts, and Analysis History",
+  "repo_notes": [
+    {
+      "topic": "Session Architecture",
+      "content": "5-session pipeline processes ADO work items: Session 0 (gate, <=1 ACU) -> Session D (triage, <=3 ACU) -> Session A (code analysis, <=5 ACU) -> Session B (Wiki documentation, <=3 ACU) -> Session C (test coverage, <=5 ACU). Each session produces artifacts for the next. The only trigger tag is devin-process."
+    },
+    {
+      "topic": "Storage Split",
+      "content": "Machine-facing data stored as JSON in analyses/{product}/{slug}.json. Human-facing documentation stored as markdown in ADO Wiki pages at /Functionalities/{slug}. Both updated by the session pipeline and kept in sync."
+    },
+    {
+      "topic": "Secret Management",
+      "content": "4 separate PATs with minimum scope: ADO_PAT_WORKITEMS (Work Items R&W), ADO_PAT_WIKI (Wiki R&W), ADO_PAT_CODE (Code Read), ADO_PAT_TESTS (Test Mgmt R&W). No hardcoded values anywhere. All credentials from Devin Secrets Manager."
+    },
+    {
+      "topic": "API Conventions",
+      "content": "All ADO scripts pin to api-version=7.1. No preview versions in production (except comments API at 7.1-preview.4). Content-Type for work item operations must be application/json-patch+json. Field names are case-sensitive. Wiki PUT updates require ETag from prior GET."
+    },
+    {
+      "topic": "Error Handling Philosophy",
+      "content": "When any ADO API call fails, check docs/error-catalog.md FIRST. Never search online for ADO API troubleshooting. New errors are added to the catalog after resolution, building institutional memory over time."
+    },
+    {
+      "topic": "Script Library Convention",
+      "content": "All ADO operations use hardened scripts in scripts/ado/. Playbooks reference scripts, never raw curl commands. Scripts handle auth headers, Content-Types, URL encoding, and error checking consistently."
+    },
+    {
+      "topic": "Scope Limiting Strategy",
+      "content": "Session A enforces hard stops: max 5 models, max 10 entry points, trace one level deep only. When limits are hit, Devin posts a clarification comment and exits cleanly rather than burning ACUs on unbounded exploration."
+    }
+  ],
   "indexing": {
     "include": [
       "README.md",
@@ -8,7 +38,8 @@
       "devin/knowledge/**/*.md",
       "devin/playbooks/**/*.md",
       "docs/**/*.md",
-      "analyses/**/*.json"
+      "analyses/**/*.json",
+      "DevinStorage/**/*.md"
     ],
     "exclude": [
       "devin/secrets/**",
@@ -36,6 +67,10 @@
     {
       "name": "Analysis Records",
       "files": ["analyses/**/*.json"]
+    },
+    {
+      "name": "Best Practices & Guides",
+      "files": ["DevinStorage/**/*.md"]
     }
   ]
 }

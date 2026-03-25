@@ -35,16 +35,33 @@ See `scripts/ado/pull-requests/update.sh` for the update payload format.
 
 See `scripts/ado/pull-requests/add-reviewer.sh` for usage.
 
-## Gotchas
+## Required Fields for PR Creation
 
-See `DevinStorage/AzureDevOps Documentation/references/api-gotchas.md` for gotchas G1 (case sensitivity), G5 (path separators), G8 (refs/heads prefix).
+| Field | Required | Format | Example |
+|-------|----------|--------|---------|
+| `sourceRefName` | Yes | Full branch ref | `refs/heads/feature/login-fix` |
+| `targetRefName` | Yes | Full branch ref | `refs/heads/main` |
+| `title` | Yes | String | `"Fix null check in login flow"` |
+| `description` | No | Markdown string | `"## Summary\n..."` |
+| `reviewers` | No | Array of `{id: GUID}` | `[{"id": "a1b2c3d4-..."}]` |
+| `workItemRefs` | No | Array of `{id: string}` | `[{"id": "12345"}]` |
 
 ## Rules
 
-- Branch refs must include full prefix: `refs/heads/main` not just `main` (see api-gotchas.md G8)
-- Reviewer ID must be AAD Object ID (GUID) — not display name, not email address
+- Branch refs **must** include full prefix: `refs/heads/main` not just `main`. Without it, the API returns 400. The `create.sh` script auto-adds the prefix if missing, but always be explicit.
+- Reviewer ID **must** be AAD Object ID (GUID) — not display name, not email. Wrong format silently fails.
 - Work item links are added via `workItemRefs` array at creation time
 - Use scripts instead of raw curl calls
+- PR descriptions support markdown and have a 4000-character limit
+
+## Scripts
+
+- `scripts/ado/pull-requests/create.sh` — POST new PR
+- `scripts/ado/pull-requests/update.sh` — PATCH PR status
+- `scripts/ado/pull-requests/add-reviewer.sh` — PUT reviewer
+- `scripts/ado/pull-requests/add-comment.sh` — POST comment thread
+- `scripts/ado/pull-requests/link-work-item.sh` — Link work item post-creation
+- `scripts/ado/pull-requests/get.sh` — GET PR details or list active PRs
 
 ## Scripts
 

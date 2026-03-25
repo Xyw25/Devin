@@ -36,9 +36,10 @@ Use `ADO_PAT_CODE` for the PAT value. Never hardcode the PAT in the URL — cons
 ## Rules
 
 - Always look up repo ID dynamically — never hardcode it
-- Branch refs always use `refs/heads/` prefix — see `api-gotchas.md` G11
+- Branch refs always use `refs/heads/` prefix (e.g., `refs/heads/main`, not `main`). Without it, API calls fail silently or return 400.
 - `ADO_PAT_CODE` scope: Code (Repositories): Read
-- For PR creation, you need the repo ID (GUID), not the name — see `api-gotchas.md` G29
+- For PR creation, you need the repo **ID** (GUID like `a1b2c3d4-e5f6-...`), not the repo **name** (string like `MyRepo`). Use `get.sh` to look up the ID from the name.
+- Clone URLs embed the PAT in the URL — never log or commit clone URLs as they contain credentials
 
 ## Scripts
 

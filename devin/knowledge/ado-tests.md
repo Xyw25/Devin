@@ -49,8 +49,20 @@ The `Microsoft.VSTS.TCM.Steps` field uses XML:
 - Each step needs a unique sequential `id` attribute
 - Link test cases to parent work items using `TestedBy-Forward` relation
 
+## Example Create Payload
+
+The minimum JSON Patch body to create a test case:
+```json
+[
+  {"op": "add", "path": "/fields/System.Title", "value": "Verify login succeeds with valid credentials"},
+  {"op": "add", "path": "/fields/System.AreaPath", "value": "Project\\Team\\Area"},
+  {"op": "add", "path": "/fields/Microsoft.VSTS.TCM.Steps", "value": "<steps><step id=\"1\" type=\"ActionStep\"><parameterizedString isformatted=\"true\">Enter valid credentials and click Login</parameterizedString><parameterizedString isformatted=\"true\">User is redirected to dashboard</parameterizedString></step></steps>"}
+]
+```
+
 ## Scripts
 
-- `scripts/ado/tests/get-plans.sh` — GET test plans
-- `scripts/ado/tests/get-cases.sh` — GET test cases in a suite
+- `scripts/ado/tests/get-plans.sh` — GET all test plans in the project
+- `scripts/ado/tests/get-cases.sh` — GET test cases in a specific suite
 - `scripts/ado/tests/create-case.sh` — POST new test case work item
+- `scripts/ado/tests/get-case-detail.sh` — GET full test case details including steps XML

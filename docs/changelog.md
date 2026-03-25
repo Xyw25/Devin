@@ -182,6 +182,18 @@ All notable changes to scripts and documentation in this repository.
 - Fixed README playbook count (10 → 9, knowledge count 11 → 12)
 - Added Attachment Handler to README session table
 - Added `partial` and `scopeLimitHit` fields to analysis JSON schema
+
+## 2026-03-26 — ADO Documentation Monitor Playbook
+
+- Added `devin/playbooks/session-ado-doc-monitor.md` — weekly Azure DevOps API documentation monitoring
+  - Checks 8 Microsoft learn.microsoft.com REST API source URLs
+  - Updates local files in `DevinStorage/AzureDevOps Documentation/` when changes detected
+  - Verifies script compatibility — flags affected scripts for manual review (never auto-modifies)
+  - Tracks API version lifecycle — CRITICAL alerts on deprecation
+  - Adds new gotchas (G31+) when changed behaviors are discovered
+  - Schedule: weekly Monday 10am UTC (`0 10 * * 1`)
+- Added `DevinStorage/schedules/ado-doc-monitor-state.json` — initial state file with 8 sources, 17 document versions, API version tracking, script update flags
+- Updated `README.md` — added ADO-Monitor to session table, updated playbook count to 10
 - `DevinStorage/README.md` — updated indexes for all new files
 - `AzureDevOps Documentation/README.md` — updated with 8 API guides, 6 operations, 3 references
 - `.devin/wiki.json` — added ADO Operations Coverage note, updated script count

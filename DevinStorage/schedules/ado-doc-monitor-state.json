@@ -1,0 +1,103 @@
+{
+  "taskName": "ado-doc-monitor",
+  "description": "Weekly Azure DevOps REST API documentation monitoring and update task",
+  "lastCheckDate": "2026-03-26T00:00:00Z",
+  "lastCheckVersion": 1,
+  "schedule": "0 10 * * 1",
+  "apiVersionStatus": {
+    "current": "7.1",
+    "previewInUse": "7.1-preview.4",
+    "deprecated": [],
+    "lastChecked": "2026-03-26"
+  },
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/wit/work-items",
+      "name": "Work Items API",
+      "mapsTo": ["api-guides/work-items-guide.md", "references/endpoint-catalog.md", "references/field-reference.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/wiki",
+      "name": "Wiki API",
+      "mapsTo": ["api-guides/wiki-guide.md", "operations/wiki-etag-workflow.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/git/pull-requests",
+      "name": "Pull Requests API",
+      "mapsTo": ["api-guides/pull-requests-guide.md", "operations/pr-comment-workflow.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/test",
+      "name": "Test Management API",
+      "mapsTo": ["api-guides/test-management-guide.md", "operations/test-case-creation.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/git/repositories",
+      "name": "Repositories API",
+      "mapsTo": ["api-guides/repositories-guide.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate",
+      "name": "PAT Authentication",
+      "mapsTo": ["api-guides/authentication-guide.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/rest/api/azure-devops/",
+      "name": "API Overview",
+      "mapsTo": ["ALL"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/devops/release-notes/",
+      "name": "Release Notes",
+      "mapsTo": ["references/api-gotchas.md", "operations/error-handling.md"],
+      "lastChecked": "2026-03-26",
+      "lastKnownState": ""
+    }
+  ],
+  "documentVersions": {
+    "api-guides/work-items-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/wiki-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/pull-requests-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/test-management-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/authentication-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/repositories-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/attachments-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "api-guides/queries-guide.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/error-handling.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/wiki-etag-workflow.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/test-case-creation.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/attachment-workflow.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/pr-comment-workflow.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "operations/bug-creation-workflow.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "references/field-reference.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "references/api-gotchas.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"},
+    "references/endpoint-catalog.md": {"version": "1.0.0", "lastUpdated": "2026-03-25"}
+  },
+  "changesFound": [],
+  "pendingScriptUpdates": [],
+  "pendingNewTopics": [],
+  "runHistory": [
+    {
+      "date": "2026-03-26",
+      "version": 1,
+      "result": "initial",
+      "changesDetected": 0,
+      "filesUpdated": 0,
+      "scriptsFlag": 0
+    }
+  ]
+}

@@ -11,7 +11,7 @@
 This repo has five jobs:
 
 1. **Teach Devin** how to operate correctly in this environment before any session
-   starts — via Knowledge items (12), Playbooks (9), and DeepWiki indexing.
+   starts — via Knowledge items (12), Playbooks (10), and DeepWiki indexing.
 
 2. **Store analysis history** — every functionality that Devin has analyzed lives
    here as a structured JSON file, persisting across sessions and building over time.
@@ -53,7 +53,7 @@ This repo has five jobs:
 │   │   ├── ado-pr-comments.md         <- PR comment threads, inline code comments
 │   │   └── environment.md             <- Org URL, project, wiki ID, area paths
 │   │
-│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (9 playbooks)
+│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (10 playbooks)
 │   │   ├── session-0-precheck.md      <- Gate check: tag, state, description
 │   │   ├── session-a-code-analysis.md <- Analyze codebase, write JSON
 │   │   ├── session-b-documentation.md <- Create/update Wiki pages
@@ -62,7 +62,8 @@ This repo has five jobs:
 │   │   ├── session-doc-monitor.md     <- Daily doc source monitoring
 │   │   ├── session-pr-creation.md     <- PR lifecycle with enriched context
 │   │   ├── session-bug-triage-deep.md <- Deep bug analysis with attachments
-│   │   └── session-attachment-handler.md <- Attachment operations
+│   │   ├── session-attachment-handler.md <- Attachment operations
+│   │   └── session-ado-doc-monitor.md <- Weekly ADO API doc monitoring
 │   │
 │   └── secrets/
 │       └── secrets-reference.md       <- Naming conventions only. No values here.
@@ -160,6 +161,7 @@ Full details, all API calls, and all design decisions are in `INTENT.md`.
 | BT | Bug Deep Triage | Complex bugs after Session D | <= 5 |
 | Doc-Monitor | Daily Doc Check | Scheduled daily 9am UTC | <= 5 |
 | ATT | Attachment Handler | On-demand (utility) | <= 2 |
+| ADO-Monitor | ADO Doc Check | Weekly Monday 10am UTC | <= 5 |
 
 ---
 

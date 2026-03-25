@@ -11,7 +11,7 @@
 This repo has five jobs:
 
 1. **Teach Devin** how to operate correctly in this environment before any session
-   starts — via Knowledge items (12), Playbooks (10), and DeepWiki indexing.
+   starts — via Knowledge items (21), Playbooks (13), and DeepWiki indexing.
 
 2. **Store analysis history** — every functionality that Devin has analyzed lives
    here as a structured JSON file, persisting across sessions and building over time.
@@ -53,7 +53,7 @@ This repo has five jobs:
 │   │   ├── ado-pr-comments.md         <- PR comment threads, inline code comments
 │   │   └── environment.md             <- Org URL, project, wiki ID, area paths
 │   │
-│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (10 playbooks)
+│   ├── playbooks/                     <- Import into Devin Settings > Playbooks (13 playbooks)
 │   │   ├── session-0-precheck.md      <- Gate check: tag, state, description
 │   │   ├── session-a-code-analysis.md <- Analyze codebase, write JSON
 │   │   ├── session-b-documentation.md <- Create/update Wiki pages

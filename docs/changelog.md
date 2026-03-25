@@ -194,6 +194,34 @@ All notable changes to scripts and documentation in this repository.
   - Schedule: weekly Monday 10am UTC (`0 10 * * 1`)
 - Added `DevinStorage/schedules/ado-doc-monitor-state.json` — initial state file with 8 sources, 17 document versions, API version tracking, script update flags
 - Updated `README.md` — added ADO-Monitor to session table, updated playbook count to 10
+
+## 2026-03-26 — Per-Stack Code Analysis Methodology
+
+### Knowledge Items (9 new — 3 per tech stack)
+**Vite/React:**
+- `react-entry-points.md` — page components, routes, API calls, event handlers
+- `react-models-state.md` — TypeScript interfaces, Redux/Zustand, React Query
+- `react-project-structure.md` — Vite conventions, directory layout, package.json
+
+**.NET 10 (Modern):**
+- `dotnet-modern-entry-points.md` — Controllers, Minimal APIs, Razor Pages, SignalR
+- `dotnet-modern-models.md` — EF Core entities, DTOs, DbContext, migrations
+- `dotnet-modern-project-structure.md` — .csproj, DI container, middleware, appsettings
+
+**.NET 4.8 (Legacy):**
+- `dotnet-legacy-entry-points.md` — ASPX pages, code-behind, ASMX, WCF, HTTP handlers
+- `dotnet-legacy-models.md` — ADO.NET DataSets, EF6, LINQ to SQL, stored procedures
+- `dotnet-legacy-project-structure.md` — web.config, Global.asax, App_Code, packages.config
+
+### Playbooks (3 new — 1 per tech stack)
+- `session-a-react.md` — Session A for Vite/React repos with JSX/TSX grep patterns
+- `session-a-dotnet-modern.md` — Session A for .NET 10 repos with controller/EF Core patterns
+- `session-a-dotnet-legacy.md` — Session A for .NET 4.8 repos with ASPX/ADO.NET patterns
+- Each receives repo name from external orchestration (n8n/Power Automate) — no detection needed
+
+### Schema Update
+- Added `techStack` field to `analysis-json.schema.md` (react | dotnet-modern | dotnet-legacy)
+- Added 3 worked examples: User Login (React), Order Cancellation (.NET 10), Employee Report (.NET 4.8)
 - `DevinStorage/README.md` — updated indexes for all new files
 - `AzureDevOps Documentation/README.md` — updated with 8 API guides, 6 operations, 3 references
 - `.devin/wiki.json` — added ADO Operations Coverage note, updated script count

@@ -154,6 +154,34 @@ All notable changes to scripts and documentation in this repository.
 - Updated wiki.json to index schemas/
 - Updated master-guide.md with Section 15: Output Schemas
 - Updated playbook-writing-guide.md with Output Schema Requirement section and checklist item
+
+## 2026-03-26 — Logic & Approach Audit Remediation
+
+### Script Hardening (10 scripts)
+- Added HTTP status code checking to 8 write scripts (create-page, update-page,
+  PR create, PR add-comment, PR link-work-item, WI comment, WI link-relation, WI create-bug, WI create)
+- Added 409/412 ETag conflict retry logic to `wiki/update-page.sh` (max 2 retries)
+- Fixed `repos/clone.sh`: handles existing directory (falls back to git pull),
+  sanitizes PAT from error messages to prevent credential leaks
+
+### Playbook Logic Fixes (6 playbooks)
+- Session D: Added loop guard (A→B→C chain triggers max once per session), Wiki
+  existence check before update (handles 404 gracefully), workItems dedup check
+- Session A: Added git pull --rebase before push, workItems dedup, partial analysis
+  support (writes partial JSON with `partial: true` when scope limits hit)
+- Session C: Added git pull --rebase, workItems dedup, test case title dedup check
+- Sessions PR, BT: Added git pull --rebase before DevinStorage push
+- Session doc-monitor: Added state file JSON validation with reset fallback
+
+### New Knowledge Item
+- `devin/knowledge/keyword-extraction.md` — concrete algorithm with stopword list,
+  token extraction rules, edge case handling, and worked example
+
+### Cross-File Consistency Fixes
+- Fixed wrong gotcha reference in `ado-work-items.md` (G8 → G3/G11)
+- Fixed README playbook count (10 → 9, knowledge count 11 → 12)
+- Added Attachment Handler to README session table
+- Added `partial` and `scopeLimitHit` fields to analysis JSON schema
 - `DevinStorage/README.md` — updated indexes for all new files
 - `AzureDevOps Documentation/README.md` — updated with 8 API guides, 6 operations, 3 references
 - `.devin/wiki.json` — added ADO Operations Coverage note, updated script count

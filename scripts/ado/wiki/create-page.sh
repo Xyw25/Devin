@@ -15,9 +15,20 @@ ENCODED_PATH=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${PAGE
 # Build JSON payload
 JSON_BODY=$(jq -n --arg content "$CONTENT" '{"content": $content}')
 
-curl -s \
+RESPONSE=$(curl -s -w "\n%{http_code}" \
   -X PUT \
   -H "${ADO_AUTH_HEADER}" \
   -H "Content-Type: application/json" \
   -d "${JSON_BODY}" \
-  "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/wiki/wikis/${ADO_WIKI_ID}/pages?path=${ENCODED_PATH}&api-version=7.1"
+  "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/wiki/wikis/${ADO_WIKI_ID}/pages?path=${ENCODED_PATH}&api-version=7.1")
+
+HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+BODY=$(echo "$RESPONSE" | sed '$d')
+
+if [[ "$HTTP_CODE" =~ ^2 ]]; then
+  echo "$BODY"
+else
+  echo "ERROR: Wiki page creation failed (HTTP ${HTTP_CODE}). Page: ${PAGE_PATH}" >&2
+  echo "$BODY" >&2
+  exit 1
+fi

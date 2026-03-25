@@ -11,7 +11,7 @@
 This repo has five jobs:
 
 1. **Teach Devin** how to operate correctly in this environment before any session
-   starts — via Knowledge items (11), Playbooks (10), and DeepWiki indexing.
+   starts — via Knowledge items (12), Playbooks (9), and DeepWiki indexing.
 
 2. **Store analysis history** — every functionality that Devin has analyzed lives
    here as a structured JSON file, persisting across sessions and building over time.
@@ -159,6 +159,7 @@ Full details, all API calls, and all design decisions are in `INTENT.md`.
 | PR | PR Creation | After implementation | <= 3 |
 | BT | Bug Deep Triage | Complex bugs after Session D | <= 5 |
 | Doc-Monitor | Daily Doc Check | Scheduled daily 9am UTC | <= 5 |
+| ATT | Attachment Handler | On-demand (utility) | <= 2 |
 
 ---
 

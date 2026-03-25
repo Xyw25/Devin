@@ -52,6 +52,8 @@
     }
   ],
   "wikiPagePath": "/Functionalities/user-login",
+  "partial": false,
+  "scopeLimitHit": null,
   "analysisHistory": [
     {
       "date": "2026-03-25",
@@ -72,6 +74,8 @@
 | `product` | Yes | — | Used as subdirectory name in `analyses/` |
 | `keywords` | Yes | 20 | Used by Session D for triage matching (min 2 overlap) |
 | `lastAnalyzedCommit` | Yes | — | Full SHA, compared against HEAD for skip/supplement |
+| `partial` | No | — | `true` if scope limits were hit before analysis completed. Default: `false` |
+| `scopeLimitHit` | No | — | Reason string if partial (e.g., "5 models exceeded"). `null` if complete |
 | `entryPoints` | Yes | 10 | Hard stop: if >10 found, post comment and ask for focus |
 | `models` | Yes | 5 | Hard stop: if >5 found, post comment and ask for focus |
 | `dependencies` | Yes | — | One level deep only |

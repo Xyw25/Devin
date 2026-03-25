@@ -51,7 +51,7 @@ Use the `TestedBy-Forward` relation to link items. See `scripts/ado/work-items/l
 
 ## Gotchas
 
-See `DevinStorage/AzureDevOps Documentation/references/api-gotchas.md` for gotchas G1 (case sensitivity), G5 (path separators), G8 (refs/heads prefix).
+See `DevinStorage/AzureDevOps Documentation/references/api-gotchas.md` for gotchas G3 (case sensitivity), G5 (path separators), G11 (refs/heads prefix).
 
 ## Comments
 

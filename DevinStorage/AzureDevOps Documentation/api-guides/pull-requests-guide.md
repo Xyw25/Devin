@@ -231,3 +231,9 @@ These appear as linked work items in the PR view.
 ## PAT Required
 
 `ADO_PAT_CODE` — Code (Repositories): Read (for creation, may need Write depending on org settings)
+
+---
+
+## Error Handling
+
+For error diagnosis and recovery procedures (400, 401, 409, 412), see [error-handling.md](../operations/error-handling.md).

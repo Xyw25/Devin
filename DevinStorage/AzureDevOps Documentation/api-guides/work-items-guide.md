@@ -332,3 +332,9 @@ See [field-reference.md](../references/field-reference.md) for the complete list
 ## PAT Required
 
 `ADO_PAT_WORKITEMS` — Work Items: Read & Write
+
+---
+
+## Error Handling
+
+For error diagnosis and recovery procedures (400, 401, 403, 404, 409, 413), see [error-handling.md](../operations/error-handling.md).

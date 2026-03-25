@@ -7,7 +7,7 @@
 Comprehensive Azure DevOps REST API documentation, operational guides,
 and reference material for this organization's Devin automation pipeline.
 
-Covers all **28 ADO operations** across 5 domains: work items, pull requests,
+Covers all **27 ADO operations** across 5 domains: work items, pull requests,
 wiki, test management, and repositories.
 
 ---

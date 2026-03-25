@@ -2,6 +2,7 @@
 
 > Created: 2026-03-25
 > API Version: 7.1
+> PAT Required: `ADO_PAT_WORKITEMS` (Work Items: Read & Write)
 
 ## Overview
 
@@ -15,7 +16,7 @@ The request body is the raw file content with `Content-Type: application/octet-s
 
 ```bash
 UPLOAD_RESPONSE=$(curl -s -X POST \
-  -u ":${ADO_PAT_CODE}" \
+  -u ":${ADO_PAT_WORKITEMS}" \
   -H "Content-Type: application/octet-stream" \
   --data-binary @"${FILE_PATH}" \
   "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/wit/attachments?fileName=$(basename "${FILE_PATH}")&api-version=7.1")
@@ -36,7 +37,7 @@ Add an `AttachedFile` relation pointing to the blob URL from Step 1.
 
 ```bash
 curl -s -X PATCH \
-  -u ":${ADO_PAT_CODE}" \
+  -u ":${ADO_PAT_WORKITEMS}" \
   -H "Content-Type: application/json-patch+json" \
   "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/wit/workitems/${WORK_ITEM_ID}?api-version=7.1" \
   -d "[
@@ -59,7 +60,7 @@ curl -s -X PATCH \
 **GET** the blob URL directly, providing the authorization header.
 
 ```bash
-curl -s -u ":${ADO_PAT_CODE}" \
+curl -s -u ":${ADO_PAT_WORKITEMS}" \
   -o "${OUTPUT_FILE}" \
   "${ATTACHMENT_URL}"
 ```
@@ -71,7 +72,7 @@ curl -s -u ":${ADO_PAT_CODE}" \
 Filter the `relations` array for entries where `rel` equals `AttachedFile`.
 
 ```bash
-curl -s -u ":${ADO_PAT_CODE}" \
+curl -s -u ":${ADO_PAT_WORKITEMS}" \
   "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/wit/workitems/${WORK_ITEM_ID}?\$expand=relations&api-version=7.1" \
   | jq '.relations[] | select(.rel == "AttachedFile") | {url, attributes}'
 ```

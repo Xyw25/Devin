@@ -1,5 +1,8 @@
 # ADO Pull Requests — Knowledge Item
 
+## Trigger Description
+ADO pull request creation, update, reviewer management, branch ref format
+
 ## API Endpoint
 
 ```
@@ -9,56 +12,39 @@ API version: api-version=7.1
 
 ## Creating a PR
 
-```
-POST /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests?api-version=7.1
-Content-Type: application/json
-{
-  "sourceRefName": "refs/heads/{source-branch}",
-  "targetRefName": "refs/heads/{target-branch}",
-  "title": "PR title",
-  "description": "PR description in markdown",
-  "reviewers": [
-    {
-      "id": "{AAD-Object-ID-GUID}"
-    }
-  ],
-  "workItemRefs": [
-    {
-      "id": "{work-item-id}"
-    }
-  ]
-}
-```
-
-## Critical Rules
-
-- **Branch refs must include full prefix:** `refs/heads/main` not just `main`
-- **Reviewer ID must be AAD Object ID (GUID):** not display name, not email address
-- **Work item links** are added via `workItemRefs` array at creation time
+See `scripts/ado/pull-requests/create.sh` for the full create payload. Key fields in the JSON body:
+- `sourceRefName` / `targetRefName` — full branch refs (e.g., `refs/heads/main`)
+- `title` / `description` — PR metadata (description supports markdown)
+- `reviewers` — array of `{ "id": "{AAD-Object-ID-GUID}" }` objects
+- `workItemRefs` — array of `{ "id": "{work-item-id}" }` objects
 
 ## Updating a PR
 
-```
-PATCH /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests/{prId}?api-version=7.1
-Content-Type: application/json
-{
-  "status": "completed",
-  "completionOptions": {
-    "deleteSourceBranch": true,
-    "mergeStrategy": "squash"
-  }
-}
-```
+See `scripts/ado/pull-requests/update.sh` for the update payload format.
+
+## Merge Strategies
+
+| Strategy | Value |
+|---|---|
+| Merge (no fast-forward) | `noFastForward` |
+| Squash | `squash` |
+| Rebase | `rebase` |
+| Rebase + merge | `rebaseMerge` |
 
 ## Adding a Reviewer
 
-```
-PUT /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests/{prId}/reviewers/{reviewerId}?api-version=7.1
-Content-Type: application/json
-{
-  "vote": 0
-}
-```
+See `scripts/ado/pull-requests/add-reviewer.sh` for usage.
+
+## Gotchas
+
+See `DevinStorage/AzureDevOps Documentation/references/api-gotchas.md` for gotchas G1 (case sensitivity), G5 (path separators), G8 (refs/heads prefix).
+
+## Rules
+
+- Branch refs must include full prefix: `refs/heads/main` not just `main` (see api-gotchas.md G8)
+- Reviewer ID must be AAD Object ID (GUID) — not display name, not email address
+- Work item links are added via `workItemRefs` array at creation time
+- Use scripts instead of raw curl calls
 
 ## Scripts
 

@@ -1,5 +1,8 @@
 # ADO Authentication — Knowledge Item
 
+## Trigger Description
+ADO REST API PAT authentication, Base64 header construction, scope selection
+
 ## PAT Format
 
 All ADO REST API calls authenticate via Personal Access Token (PAT) passed as
@@ -33,3 +36,7 @@ Every `curl` call must include:
 - Each PAT has minimum scope — use the right PAT for the right operation
 - If a 401 or 403 is returned, check `docs/error-catalog.md` first
 - PATs expire — if auth suddenly fails across all calls, the PAT likely expired
+
+## Scripts
+
+- `scripts/ado/auth.sh` — generates the Base64-encoded Authorization header from environment variables

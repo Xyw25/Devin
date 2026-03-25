@@ -1,5 +1,8 @@
 # ADO Wiki — Knowledge Item
 
+## Trigger Description
+ADO Wiki page creation and update with ETag concurrency requirement
+
 ## API Endpoint
 
 ```
@@ -23,40 +26,10 @@ fetch a fresh one immediately before each update.
 
 ## Page Operations
 
-### List Wikis
-```
-GET /{org}/{project}/_apis/wiki/wikis?api-version=7.1
-```
-
-### Get Page (with content and ETag)
-```
-GET /{org}/{project}/_apis/wiki/wikis/{wikiId}/pages
-    ?path={pagePath}&includeContent=true&api-version=7.1
-```
-Capture `ETag` from response headers.
-
-### Create Page
-```
-PUT /{org}/{project}/_apis/wiki/wikis/{wikiId}/pages
-    ?path={pagePath}&api-version=7.1
-Content-Type: application/json
-{
-  "content": "# Page Title\n\nMarkdown content here"
-}
-```
-No `If-Match` header needed for first creation.
-
-### Update Page
-```
-PUT /{org}/{project}/_apis/wiki/wikis/{wikiId}/pages
-    ?path={pagePath}&api-version=7.1
-If-Match: {ETag}
-Content-Type: application/json
-{
-  "content": "# Updated content\n\nNew markdown content"
-}
-```
-**`If-Match` header is mandatory for updates.**
+- **List Wikis:** `GET /_apis/wiki/wikis?api-version=7.1`
+- **Get Page:** Use `scripts/ado/wiki/get-page.sh` — retrieves page content and captures the ETag header.
+- **Create Page:** Use `scripts/ado/wiki/create-page.sh` — PUTs a new page. No `If-Match` header needed for first creation.
+- **Update Page:** Use `scripts/ado/wiki/update-page.sh` — PUTs updated content with the required `If-Match: {ETag}` header. The ETag **must** come from a fresh GET immediately before the update.
 
 ## Wiki Structure for This System
 
@@ -64,6 +37,13 @@ Content-Type: application/json
 /FunctionalityIndex               <- Master index page
 /Functionalities/{slug}           <- One page per functionality
 ```
+
+## Rules
+
+- Always GET before PUT to obtain a fresh ETag
+- Never cache or reuse ETags across operations
+- Page content is Markdown format
+- Use the scripts — they handle ETag capture automatically
 
 ## Scripts
 

@@ -1,5 +1,8 @@
 # ADO Work Items — Knowledge Item
 
+## Trigger Description
+ADO work item fields, JSON Patch format, relations, Content-Type requirements
+
 ## API Endpoint
 
 ```
@@ -7,7 +10,7 @@ Base: {ADO_ORG_URL}/{ADO_PROJECT}/_apis/wit/workitems
 API version: api-version=7.1
 ```
 
-## Field Names (Case-Sensitive)
+## Common Field Reference
 
 | Field | Reference Name |
 |---|---|
@@ -20,8 +23,6 @@ API version: api-version=7.1
 | Tags | `System.Tags` |
 | Assigned To | `System.AssignedTo` |
 
-**CRITICAL:** Field names are case-sensitive. `System.Title` works. `system.title` does not.
-
 ## Content-Type
 
 Work item create and update operations require:
@@ -32,64 +33,37 @@ Using `application/json` returns HTTP 400.
 
 ## Patch Format
 
-All field updates use JSON Patch operations:
+All field updates use JSON Patch operations. Each operation looks like:
 ```json
-[
-  {
-    "op": "add",
-    "path": "/fields/System.Title",
-    "value": "New title"
-  }
-]
+{ "op": "add", "path": "/fields/System.Title", "value": "New title" }
 ```
-
 Valid operations: `add`, `replace`, `remove`, `test`
+
+See `scripts/ado/work-items/create.sh` for the full create payload format.
 
 ## Description Field
 
-`System.Description` accepts HTML content. Plain text must be wrapped:
-```json
-{
-  "op": "add",
-  "path": "/fields/System.Description",
-  "value": "<p>Plain text content here</p>"
-}
-```
+`System.Description` accepts HTML content. Plain text must be wrapped in `<p>` tags.
 
 ## Relations
 
-Adding a relation (e.g., TestedBy):
-```json
-[
-  {
-    "op": "add",
-    "path": "/relations/-",
-    "value": {
-      "rel": "Microsoft.VSTS.Common.TestedBy-Forward",
-      "url": "{org_url}/{project}/_apis/wit/workitems/{target_id}",
-      "attributes": {
-        "comment": "Linked by Devin automation"
-      }
-    }
-  }
-]
-```
+Use the `TestedBy-Forward` relation to link items. See `scripts/ado/work-items/link-relation.sh` for the relation payload format.
 
-## Path Separators
+## Gotchas
 
-- Area path uses backslash: `Project\Team\Area`
-- Iteration path uses backslash: `Project\Sprint 1`
-- Never use forward slash for these paths
+See `DevinStorage/AzureDevOps Documentation/references/api-gotchas.md` for gotchas G1 (case sensitivity), G5 (path separators), G8 (refs/heads prefix).
 
 ## Comments
 
-```
-POST /{org}/{project}/_apis/wit/workitems/{id}/comments?api-version=7.1-preview.4
-Content-Type: application/json
-{
-  "text": "<p>Comment HTML content</p>"
-}
-```
+Comments are posted via a separate endpoint. See `scripts/ado/work-items/comment.sh` for usage.
+
+## Rules
+
+- Always use `application/json-patch+json` as Content-Type for create/update
+- Field reference names are case-sensitive (see api-gotchas.md G1)
+- Area/Iteration paths use backslash separators (see api-gotchas.md G5)
+- `System.Description` must contain HTML — wrap plain text in `<p>` tags
+- Use scripts instead of raw curl calls
 
 ## Scripts
 

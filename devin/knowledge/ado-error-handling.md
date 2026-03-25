@@ -1,9 +1,7 @@
 # ADO Error Handling — Knowledge Item
 
-## First Rule
-
-When any ADO API call fails, check `docs/error-catalog.md` BEFORE attempting
-any other recovery action. Do not search online.
+## Trigger Description
+ADO API error diagnosis, HTTP status codes, recovery using error-catalog.md
 
 ## Common Errors and Fixes
 
@@ -11,9 +9,9 @@ any other recovery action. Do not search online.
 | Cause | Fix |
 |---|---|
 | Wrong Content-Type | Use `application/json-patch+json` for work item create/update |
-| Invalid field name | Field names are case-sensitive: `System.Title` not `system.title` |
+| Invalid field name | Field names are case-sensitive — see `api-gotchas.md` G3 |
 | Malformed JSON Patch | Ensure `op`, `path`, and `value` are all present |
-| Missing `refs/heads/` prefix | Branch refs need full prefix: `refs/heads/main` |
+| Missing `refs/heads/` prefix | Branch refs need full prefix — see `api-gotchas.md` G11 |
 
 ### 401 Unauthorized
 | Cause | Fix |
@@ -55,3 +53,14 @@ any other recovery action. Do not search online.
 4. Apply the fix
 5. If the error is new, add it to `docs/error-catalog.md` after resolution
 6. **Never search online for ADO API troubleshooting**
+
+## Rules
+
+- When any ADO API call fails, check `docs/error-catalog.md` BEFORE attempting any other recovery action. Do not search online.
+- For case-sensitivity errors, refer to `api-gotchas.md` G3 (field names) and G11 (branch refs) rather than debugging from scratch.
+- Always capture the full response body — ADO error messages often contain the exact field or value that caused the failure.
+- After resolving a new error, immediately add it to `docs/error-catalog.md` for future reference.
+
+## Scripts
+
+- `docs/error-catalog.md` — companion artifact containing all previously encountered errors and resolutions

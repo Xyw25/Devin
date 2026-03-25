@@ -1,7 +1,7 @@
 # ADO Pull Request Comments — Knowledge Item
 
 ## Trigger Description
-PR comment, pull request thread, code review comment, add comment to PR
+ADO pull request comment threads: thread model, status values, inline code comments with file anchors
 
 ## PR Comment Model
 
@@ -27,42 +27,37 @@ Each thread has a status and contains one or more comments.
 
 ## General Thread (Non-Inline)
 
-```
-POST /_apis/git/repositories/{repoId}/pullrequests/{prId}/threads?api-version=7.1
-Content-Type: application/json
-```
-
-Body:
-```json
-{
-  "comments": [{"parentCommentId": 0, "content": "Comment text", "commentType": 1}],
-  "status": 1
-}
-```
+Use `scripts/ado/pull-requests/add-comment.sh` to create a general comment thread. The script POSTs to the threads endpoint with a JSON body containing:
+- `comments` — array with `parentCommentId` (0 for top-level), `content` (the text), and `commentType` (1 for user comments)
+- `status` — integer thread status (see table above)
 
 ## Inline Code Comment
 
-Same endpoint, but add `threadContext` to anchor to a file and line:
+Same endpoint as general threads, but includes a `threadContext` object to anchor the comment to a specific file and line range:
+- `filePath` — the file path in the repo (e.g., `/src/auth/login.ts`)
+- `rightFileStart` / `rightFileEnd` — objects with `line` and `offset` specifying the code range
 
-```json
-{
-  "comments": [{"parentCommentId": 0, "content": "Comment text", "commentType": 1}],
-  "status": 1,
-  "threadContext": {
-    "filePath": "/src/auth/login.ts",
-    "rightFileStart": {"line": 42, "offset": 1},
-    "rightFileEnd": {"line": 42, "offset": 50}
-  }
-}
+Without `threadContext`, the comment becomes a general (non-inline) comment. See `api-gotchas.md` G27 for details.
+
+## Updating Thread Status
+
+To update an existing thread's status (e.g., mark as resolved), PATCH the thread endpoint:
+
 ```
+PATCH /_apis/git/repositories/{repoId}/pullrequests/{prId}/threads/{threadId}?api-version=7.1
+```
+
+The body is simply `{"status": 2}` (using the integer status value). This is separate from adding a reply to the thread.
 
 ## Rules
 
 - `parentCommentId: 0` means a top-level comment in the thread
 - To reply to an existing thread, POST to the specific thread's comments endpoint
-- PR comments use `application/json`, NOT `json-patch+json`
+- PR comments use `application/json`, NOT `json-patch+json` — see `api-gotchas.md` G2
 - Thread status is on the thread, not individual comments
+- Status values are integers, not strings — see `api-gotchas.md` G26
 
 ## Scripts
 
 - `scripts/ado/pull-requests/add-comment.sh` — add a general comment thread
+- `scripts/ado/pull-requests/add-inline-comment.sh` — add an inline code comment with file anchor

@@ -1,5 +1,8 @@
 # Environment Configuration — Knowledge Item
 
+## Trigger Description
+ADO environment configuration: org URL, project, wiki ID, area paths, PAT scopes
+
 ## Environment Variables
 
 All values are sourced from Devin's Secrets Manager. Never hardcode.
@@ -38,5 +41,14 @@ All scripts pin to **`api-version=7.1`**. No preview versions in production.
 
 ## Area Path Format
 
-Uses backslash separator: `Project\Team\Area`
-Never use forward slash for area or iteration paths.
+Area and iteration paths use backslash separators — see `api-gotchas.md` G5 and G6 for details and examples. Wiki paths use forward slash — see `api-gotchas.md` G7.
+
+## Rules
+
+- Never hardcode these values — always read from Devin Secrets Manager environment variables
+- PAT variables are scoped by purpose — use the correct PAT for each API domain
+- `api-version=7.1` is pinned across all scripts; do not use preview versions unless explicitly required (comments endpoint is the sole exception)
+
+## Scripts
+
+- `scripts/ado/setup/verify-env.sh` — verify all required environment variables are set

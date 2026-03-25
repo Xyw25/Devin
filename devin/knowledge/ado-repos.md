@@ -1,7 +1,7 @@
 # ADO Repositories — Knowledge Item
 
 ## Trigger Description
-ADO repository, clone repo, list repositories, get repo ID, repository details
+ADO repository listing, ID lookup, clone URL construction with PAT authentication
 
 ## Repository Operations
 
@@ -36,9 +36,9 @@ Use `ADO_PAT_CODE` for the PAT value. Never hardcode the PAT in the URL — cons
 ## Rules
 
 - Always look up repo ID dynamically — never hardcode it
-- Branch refs always use `refs/heads/` prefix
+- Branch refs always use `refs/heads/` prefix — see `api-gotchas.md` G11
 - `ADO_PAT_CODE` scope: Code (Repositories): Read
-- For PR creation, you need the repo ID (GUID), not the name
+- For PR creation, you need the repo ID (GUID), not the name — see `api-gotchas.md` G29
 
 ## Scripts
 

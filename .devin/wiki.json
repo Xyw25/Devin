@@ -1,0 +1,41 @@
+{
+  "name": "DevinStorage",
+  "description": "Devin Operations & ADO Best Practices — Knowledge, Playbooks, Scripts, and Analysis History",
+  "indexing": {
+    "include": [
+      "README.md",
+      "INTENT.md",
+      "devin/knowledge/**/*.md",
+      "devin/playbooks/**/*.md",
+      "docs/**/*.md",
+      "analyses/**/*.json"
+    ],
+    "exclude": [
+      "devin/secrets/**",
+      ".git/**",
+      "scripts/**/*.sh"
+    ]
+  },
+  "sections": [
+    {
+      "name": "Getting Started",
+      "files": ["README.md", "INTENT.md"]
+    },
+    {
+      "name": "Knowledge Items",
+      "files": ["devin/knowledge/*.md"]
+    },
+    {
+      "name": "Playbooks",
+      "files": ["devin/playbooks/*.md"]
+    },
+    {
+      "name": "API Reference",
+      "files": ["docs/*.md"]
+    },
+    {
+      "name": "Analysis Records",
+      "files": ["analyses/**/*.json"]
+    }
+  ]
+}

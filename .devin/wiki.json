@@ -69,8 +69,12 @@
       "files": ["analyses/**/*.json"]
     },
     {
-      "name": "Best Practices & Guides",
-      "files": ["DevinStorage/**/*.md"]
+      "name": "Devin Best Practices & Guides",
+      "files": ["DevinStorage/Devin Documentation/**/*.md"]
+    },
+    {
+      "name": "AzureDevOps Documentation",
+      "files": ["DevinStorage/AzureDevOps Documentation/**/*.md"]
     }
   ]
 }

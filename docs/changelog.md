@@ -32,3 +32,18 @@ All notable changes to scripts and documentation in this repository.
 - Added `DevinStorage/references/sources.md` — All external sources with URLs and access dates
 - Updated `.devin/wiki.json` — Added 7 repo_notes and "Best Practices & Guides" section
 - Updated `docs/changelog.md` — This entry
+
+## 2026-03-25 — DevinStorage Restructure + AzureDevOps Documentation
+
+- Restructured `DevinStorage/` into two top-level sections:
+  - `DevinStorage/Devin Documentation/` — moved best-practices/, guides/, references/
+  - `DevinStorage/AzureDevOps Documentation/` — new ADO-specific documentation
+- Added `AzureDevOps Documentation/api-guides/` (5 files):
+  - work-items-guide.md, wiki-guide.md, pull-requests-guide.md,
+    test-management-guide.md, authentication-guide.md
+- Added `AzureDevOps Documentation/operations/` (3 files):
+  - error-handling.md, wiki-etag-workflow.md, test-case-creation.md
+- Added `AzureDevOps Documentation/references/` (3 files):
+  - field-reference.md, api-gotchas.md (20 gotchas G1-G20), endpoint-catalog.md
+- Updated `DevinStorage/README.md` — now indexes both documentation sections
+- Updated `.devin/wiki.json` — split into separate Devin and ADO wiki sections

@@ -1,58 +1,73 @@
-# DevinStorage — Best Practices, Guides & References
+# DevinStorage — Documentation Hub
 
 > Created: 2026-03-25
-> All sources accessed: 2026-03-25
 
-Central documentation for Devin platform best practices, operational guides,
-patterns, anti-patterns, and reference material. Everything Devin needs to
-operate effectively — compiled from official Devin docs, Cognition blog posts,
-community resources, and internal conventions.
+Central documentation hub containing two major sections:
+Devin platform guidance and Azure DevOps API documentation.
 
 ---
 
-## Best Practices
+## Devin Documentation
 
-| File | Description |
-|------|-------------|
-| [master-guide.md](best-practices/master-guide.md) | Single entry point — covers all Devin usage areas with cross-references |
-| [patterns-and-anti-patterns.md](best-practices/patterns-and-anti-patterns.md) | 10 proven patterns (P1-P10) and 10 anti-patterns (A1-A10) with concrete examples |
-| [prompt-engineering.md](best-practices/prompt-engineering.md) | How to write effective prompts — good/bad examples, templates, cost-aware techniques |
+Best practices, guides, and references for operating Devin effectively.
 
-## Guides
+| Folder | Contents |
+|--------|----------|
+| [best-practices/](Devin%20Documentation/best-practices/) | Master guide, patterns & anti-patterns, prompt engineering |
+| [guides/](Devin%20Documentation/guides/) | Knowledge writing, playbook writing, session sizing, scheduling, DeepWiki, security |
+| [references/](Devin%20Documentation/references/) | Session architecture, ACU reference, external sources |
 
-| File | Description |
-|------|-------------|
-| [knowledge-writing-guide.md](guides/knowledge-writing-guide.md) | How to write effective Knowledge items — structure, triggers, content rules |
-| [playbook-writing-guide.md](guides/playbook-writing-guide.md) | How to write effective Playbooks — 5-section structure, deliverables, iteration |
-| [session-sizing-guide.md](guides/session-sizing-guide.md) | ACU optimization, session scoping, chaining strategy, when to stop |
-| [scheduling-guide.md](guides/scheduling-guide.md) | Cron expressions, automation recipes, state persistence, attaching playbooks |
-| [deepwiki-guide.md](guides/deepwiki-guide.md) | wiki.json configuration, repo_notes, indexing strategies |
-| [security-guide.md](guides/security-guide.md) | Secret management, leak prevention, PAT rotation, incident response |
+**Start here:** [Master Guide](Devin%20Documentation/best-practices/master-guide.md)
 
-## References
+### File Index
 
-| File | Description |
-|------|-------------|
-| [session-architecture.md](references/session-architecture.md) | Full session flow diagram, decision matrix, artifact flow |
-| [acu-reference.md](references/acu-reference.md) | ACU sizing table, diagnostic matrix, red flags, optimization strategies |
-| [sources.md](references/sources.md) | All external sources with URLs and access dates |
+#### Best Practices
+- [master-guide.md](Devin%20Documentation/best-practices/master-guide.md) — Single entry point for all Devin usage guidance
+- [patterns-and-anti-patterns.md](Devin%20Documentation/best-practices/patterns-and-anti-patterns.md) — 10 patterns + 10 anti-patterns with examples
+- [prompt-engineering.md](Devin%20Documentation/best-practices/prompt-engineering.md) — Writing effective prompts, templates, cost-aware techniques
+
+#### Guides
+- [knowledge-writing-guide.md](Devin%20Documentation/guides/knowledge-writing-guide.md) — Structure, triggers, content rules for Knowledge items
+- [playbook-writing-guide.md](Devin%20Documentation/guides/playbook-writing-guide.md) — 5-section structure, deliverables, iteration strategy
+- [session-sizing-guide.md](Devin%20Documentation/guides/session-sizing-guide.md) — ACU optimization, scoping, chaining, when to stop
+- [scheduling-guide.md](Devin%20Documentation/guides/scheduling-guide.md) — Cron expressions, automation recipes, state persistence
+- [deepwiki-guide.md](Devin%20Documentation/guides/deepwiki-guide.md) — wiki.json configuration, repo_notes, indexing
+- [security-guide.md](Devin%20Documentation/guides/security-guide.md) — Secret management, leak prevention, PAT rotation
+
+#### References
+- [session-architecture.md](Devin%20Documentation/references/session-architecture.md) — Session flow diagram, decision matrix, artifact flow
+- [acu-reference.md](Devin%20Documentation/references/acu-reference.md) — ACU sizing table, diagnostics, optimization strategies
+- [sources.md](Devin%20Documentation/references/sources.md) — All external sources with URLs and access dates
 
 ---
 
-## Quick Navigation
+## AzureDevOps Documentation
 
-**Starting out?** Read [master-guide.md](best-practices/master-guide.md) first.
+Complete Azure DevOps REST API documentation for this organization's automation pipeline.
 
-**Writing a Knowledge item?** Follow [knowledge-writing-guide.md](guides/knowledge-writing-guide.md).
+| Folder | Contents |
+|--------|----------|
+| [api-guides/](AzureDevOps%20Documentation/api-guides/) | Work items, wiki, pull requests, test management, authentication |
+| [operations/](AzureDevOps%20Documentation/operations/) | Error handling, ETag workflow, test case creation |
+| [references/](AzureDevOps%20Documentation/references/) | Field reference, API gotchas, endpoint catalog |
 
-**Writing a Playbook?** Follow [playbook-writing-guide.md](guides/playbook-writing-guide.md).
+**Start here:** [AzureDevOps README](AzureDevOps%20Documentation/README.md)
 
-**Sizing a session?** Check [acu-reference.md](references/acu-reference.md) and [session-sizing-guide.md](guides/session-sizing-guide.md).
+### File Index
 
-**Setting up automation?** Follow [scheduling-guide.md](guides/scheduling-guide.md).
+#### API Guides
+- [work-items-guide.md](AzureDevOps%20Documentation/api-guides/work-items-guide.md) — CRUD, comments, relations, JSON Patch format
+- [wiki-guide.md](AzureDevOps%20Documentation/api-guides/wiki-guide.md) — Page CRUD with ETag workflow
+- [pull-requests-guide.md](AzureDevOps%20Documentation/api-guides/pull-requests-guide.md) — Creation, reviewers, completion
+- [test-management-guide.md](AzureDevOps%20Documentation/api-guides/test-management-guide.md) — Plans, suites, test case creation, TestedBy
+- [authentication-guide.md](AzureDevOps%20Documentation/api-guides/authentication-guide.md) — PAT construction, scopes, rotation
 
-**Configuring DeepWiki?** Follow [deepwiki-guide.md](guides/deepwiki-guide.md).
+#### Operations
+- [error-handling.md](AzureDevOps%20Documentation/operations/error-handling.md) — HTTP status diagnosis, recovery procedures
+- [wiki-etag-workflow.md](AzureDevOps%20Documentation/operations/wiki-etag-workflow.md) — Step-by-step ETag workflow
+- [test-case-creation.md](AzureDevOps%20Documentation/operations/test-case-creation.md) — XML steps format with examples
 
-**Security review?** Check [security-guide.md](guides/security-guide.md).
-
-**Understanding the session pipeline?** See [session-architecture.md](references/session-architecture.md).
+#### References
+- [field-reference.md](AzureDevOps%20Documentation/references/field-reference.md) — All fields, types, relations, state values
+- [api-gotchas.md](AzureDevOps%20Documentation/references/api-gotchas.md) — 20 known gotchas (G1-G20)
+- [endpoint-catalog.md](AzureDevOps%20Documentation/references/endpoint-catalog.md) — Complete endpoint table with methods and Content-Types

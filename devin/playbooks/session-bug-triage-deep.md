@@ -110,6 +110,9 @@ Full HTML format: see `schemas/bug-findings-comment.template.md`
 
 Add the work item to the functionality's `workItems` array.
 If new insights about the functionality were discovered, update the analysis JSON.
+
+Before pushing: `git pull --rebase origin master`. If push still fails, pull --rebase and retry once.
+
 Commit and push DevinStorage.
 
 ---

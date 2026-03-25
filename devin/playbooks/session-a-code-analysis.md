@@ -31,12 +31,16 @@ If file exists, compare `lastAnalyzedCommit` against current HEAD of relevant fi
 - Maximum **5 models** — stop if exceeded
 - Maximum **10 entry points** — stop if exceeded
 
-If either limit is hit:
+If scope limits are hit:
+1. Write a **partial** analysis JSON with what was found so far
+2. Add fields: `"partial": true` and `"scopeLimitHit": "{reason}"` to the JSON
+3. Post comment listing findings and asking which aspect to focus on:
 ```bash
 bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
   "<p>Analysis scope limit reached. Found [X] models and [Y] entry points. Please specify which aspect to focus on: [list what was found]</p>"
 ```
-Then exit cleanly.
+4. Commit and push the partial analysis to DevinStorage
+5. Exit — Session B can still create a partial Wiki page from available data
 
 ### Step 5: Write analysis JSON
 Create or update `analyses/{product}/{functionality-slug}.json` following the
@@ -49,7 +53,7 @@ schema defined in `INTENT.md`. Include:
 Full JSON schema: see `schemas/analysis-json.schema.md`
 
 ### Step 6: Update tracking fields
-- Append work item to `workItems` array
+- Append work item to `workItems` array (Before appending, check if the work item ID already exists in the `workItems` array. Skip if duplicate.)
 - Append entry to `analysisHistory` with date, commit SHA, work item ID, and note
 
 ### Step 7: Commit and push DevinStorage
@@ -57,6 +61,11 @@ Full JSON schema: see `schemas/analysis-json.schema.md`
 cd /path/to/DevinStorage
 git add analyses/
 git commit -m "Analysis: {functionality-slug} triggered by WI#{id}"
+```
+
+Before pushing: `git pull --rebase origin master`. If push still fails, pull --rebase and retry once.
+
+```bash
 git push
 ```
 

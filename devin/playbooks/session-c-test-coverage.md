@@ -45,6 +45,8 @@ bash scripts/ado/tests/get-cases.sh "$PLAN_ID" "$SUITE_ID"
 
 ### Step 5: Create new test cases if gaps exist
 
+Before creating a new test case, search existing test cases (from Step 4 results) for matching titles. If a test case with a substantially similar title already exists, skip creation and link the existing one instead.
+
 A **coverage gap** exists when any of these are true:
 - A user workflow step from the analysis JSON has no corresponding test case
 - An entry point has no test exercising its primary code path
@@ -79,7 +81,13 @@ bash scripts/ado/wiki/update-page.sh "/FunctionalityIndex" "$CONTENT" "$ETAG"
 ```
 
 ### Step 9: Update DevinStorage if new tests created
-If new test cases were created, update the analysis JSON and commit/push.
+If new test cases were created, update the analysis JSON.
+
+Before appending to the `workItems` array, check if the work item ID already exists. Skip if duplicate.
+
+Before pushing: `git pull --rebase origin master`. If push still fails, pull --rebase and retry once.
+
+Commit and push.
 
 ### Step 10: Post comment on work item
 ```bash

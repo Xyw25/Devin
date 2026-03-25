@@ -52,9 +52,20 @@ Determine whether the bug should have been caught by existing tests.
 Suggest new test cases if coverage appears insufficient.
 
 #### Step 8: Update Wiki and DevinStorage
+
+Before updating the Wiki page, check if it exists:
+```bash
+bash scripts/ado/wiki/get-page.sh "/Functionalities/${SLUG}"
+```
+If the GET returns 404, skip the Wiki update and note in the comment: "Wiki page not yet created — will be populated by Session B." Only update if GET returns 200.
+
 Append work item to:
 - Dedicated Wiki page work items table (with fresh ETag)
 - DevinStorage JSON `workItems` array (commit and push)
+
+Before pushing: `git pull --rebase origin master`. If push still fails, pull --rebase and retry once.
+
+Before appending, check if the work item ID already exists in the `workItems` array. Skip if duplicate.
 
 #### Step 9: Post detailed comment
 ```bash
@@ -81,6 +92,8 @@ bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
 
 #### Step 5: Trigger Session A -> B -> C chain
 After chain completes, return to Step 3 for re-matching.
+
+**Loop guard:** The A → B → C chain may only be triggered ONCE per session. If after one chain cycle the re-match still finds no 2+ keyword overlap, post a comment listing the closest partial matches and exit. Never re-trigger the chain on the same work item.
 
 ## Specifications
 

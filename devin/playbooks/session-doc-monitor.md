@@ -25,6 +25,12 @@ When changes are found, updates the relevant files and bumps their versions.
 cat DevinStorage/schedules/doc-monitor-state.json
 ```
 
+Validate the JSON is parseable:
+```bash
+jq . DevinStorage/schedules/doc-monitor-state.json > /dev/null 2>&1
+```
+If validation fails, log the error and reset the state file to the initial template (empty sources, version 1). Continue with the reset state.
+
 Parse and load:
 - `lastCheckDate` — when the last check ran
 - `lastCheckVersion` — current version counter

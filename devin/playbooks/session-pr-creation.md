@@ -102,6 +102,9 @@ Comment format: see `schemas/work-item-comment.template.md`
 ### Step 8: Update DevinStorage
 
 Append PR reference to the functionality's `workItems` array in the analysis JSON.
+
+Before pushing: `git pull --rebase origin master`. If push still fails, pull --rebase and retry once.
+
 Commit and push DevinStorage.
 
 ---

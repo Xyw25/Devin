@@ -199,9 +199,121 @@ Use `-Forward` when adding from the work item side (most common).
 
 ---
 
+## Attachment Gotchas
+
+### G21: Attachment Upload Is Always 2-Step
+
+```
+Step 1: POST blob to wit/attachments  ->  returns blob URL
+Step 2: PATCH work item to add ArtifactLink relation with blob URL
+```
+
+No single-call upload exists. You must perform both steps.
+
+### G22: Attachment Blob URLs Require Auth Headers
+
+```
+Blob URLs are NOT public URLs. Every GET to download an attachment
+must include the Authorization: Basic header, same as any other call.
+```
+
+---
+
+## WIQL Gotchas
+
+### G23: WIQL Uses Single Quotes for String Values
+
+```sql
+WHERE [System.State] = 'Active'          (CORRECT — single quotes)
+WHERE [System.State] = "Active"          (WRONG — double quotes cause parse error)
+```
+
+### G24: WIQL Field Names Are Case-Sensitive
+
+```sql
+SELECT [System.Title] FROM WorkItems     (CORRECT)
+SELECT [system.title] FROM WorkItems     (WRONG — field not found)
+```
+
+Same rule as JSON Patch fields (see G3).
+
+### G25: WIQL UNDER Operator Matches Hierarchy
+
+```sql
+WHERE [System.AreaPath] UNDER 'Project\Team'    (matches Team and all children)
+WHERE [System.AreaPath] = 'Project\Team'         (matches exact path only)
+```
+
+Use `=` for exact path match. Use `UNDER` for hierarchical match.
+
+---
+
+## PR Comment and Linking Gotchas
+
+### G26: PR Comment Threads Use Integer Status Codes
+
+```
+1 = Active
+2 = Fixed
+3 = WontFix
+4 = Closed
+5 = ByDesign
+```
+
+Do NOT use string names like `"Active"` or `"Closed"` — use the integer.
+
+### G27: PR Inline Comments Need threadContext with filePath
+
+```json
+{
+  "comments": [{"content": "Fix this", "commentType": 1}],
+  "threadContext": {
+    "filePath": "/src/main.cs",
+    "rightFileStart": {"line": 10, "offset": 1},
+    "rightFileEnd": {"line": 10, "offset": 1}
+  }
+}
+```
+
+Without `threadContext`, the comment becomes a general (non-inline) comment.
+
+### G28: ArtifactLink URL for PR Linking Uses %2F Encoding
+
+```
+vstfs:///Git/PullRequestId/{project}%2F{repo}%2F{prId}    (CORRECT)
+vstfs:///Git/PullRequestId/{project}/{repo}/{prId}          (WRONG — slashes not encoded)
+```
+
+The forward slashes between project, repo, and prId must be percent-encoded as `%2F`.
+
+---
+
+## Repository Gotchas
+
+### G29: Repository Name or ID — PR Creation Requires GUID
+
+```
+GET  git/repositories/my-repo-name    (CORRECT — name works for read)
+POST git/repositories/{GUID}/pullrequests    (CORRECT — GUID required for PR creation)
+POST git/repositories/my-repo-name/pullrequests    (WRONG — name may not resolve for writes)
+```
+
+Repository name (string) works for GET operations, but PR creation requires the repository GUID.
+
+### G30: Bug ReproSteps Field Expects HTML
+
+```json
+{"op": "add", "path": "/fields/Microsoft.VSTS.TCM.ReproSteps", "value": "<ol><li>Step 1</li><li>Step 2</li></ol>"}
+```
+
+Plain text in `Microsoft.VSTS.TCM.ReproSteps` won't render correctly in the ADO UI.
+Always wrap in HTML tags (same principle as G4 for Description).
+
+---
+
 ## Quick Checklist Before Any API Call
 
-- [ ] Content-Type correct? (json-patch+json for work items, json for others)
+- [ ] Content-Type correct? (json-patch+json for work items, json for others, octet-stream for attachments)
 - [ ] Field names case-sensitive and correct?
 - [ ] Path separators correct? (backslash for ADO paths, forward slash for wiki)
 - [ ] Branch refs include `refs/heads/` prefix?
@@ -210,3 +322,9 @@ Use `-Forward` when adding from the work item side (most common).
 - [ ] api-version=7.1 (or 7.1-preview.4 for comments)?
 - [ ] PAT includes leading colon in base64 encoding?
 - [ ] Relation URLs are full API URLs?
+- [ ] WIQL uses single quotes for string values?
+- [ ] PR comment threadContext included for inline comments?
+- [ ] ArtifactLink URL uses %2F encoding?
+- [ ] Repository GUID used for PR creation (not name)?
+- [ ] Attachment upload done in 2 steps (blob then patch)?
+- [ ] ReproSteps field contains HTML, not plain text?

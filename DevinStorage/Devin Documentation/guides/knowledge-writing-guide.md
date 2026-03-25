@@ -1,6 +1,6 @@
 # Writing Effective Knowledge Items
 
-> Version: 1.0.0
+> Version: 2.0.0
 > Created: 2026-03-25
 > Last updated: 2026-03-25
 > Sources re-verified: 2026-03-25
@@ -67,6 +67,55 @@ It must be highly specific to avoid false activations and missed activations.
 
 ---
 
+## Trigger Specificity Scoring
+
+Use this scoring rubric to evaluate trigger descriptions before saving a knowledge item.
+
+| Score | Characteristics | Example |
+|-------|----------------|---------|
+| 1 — Very Poor | Matches everything; no domain or operation specified | "helpful information" |
+| 2 — Poor | Broad domain only; no operation or context | "Azure DevOps information" |
+| 3 — Acceptable | Domain + operation, but still ambiguous | "ADO work item queries" |
+| 4 — Good | Domain + operation + narrowing context | "ADO work item field names, patch format, and relations" |
+| 5 — Excellent | Domain + operation + specific entity or scenario | "ADO Wiki page creation and update with ETag concurrency requirement" |
+
+**Target score 4 or 5 for all knowledge items.** Items scoring 1-2 should be rewritten
+before saving. Items scoring 3 are acceptable only if the domain is inherently narrow.
+
+---
+
+## Real Examples from This Repo
+
+These five knowledge items from `devin/knowledge/` demonstrate effective trigger writing:
+
+| File | Suggested Trigger | Score | Why It Works |
+|------|------------------|-------|-------------|
+| `ado-auth.md` | "ADO REST API authentication via PAT, Base64 encoding, and per-scope token selection" | 5 | Specifies the exact auth mechanism (PAT), the encoding detail (Base64), and the scoping model — uniquely identifies this item |
+| `ado-work-items.md` | "ADO work item field names, patch format, and relations" | 4 | Names the domain (work items) and three distinct content areas — narrows retrieval to work item mutation tasks |
+| `ado-wiki.md` | "ADO Wiki page creation and update with ETag concurrency requirement" | 5 | Calls out the ETag gotcha explicitly — Devin loads this precisely when it needs to create or update a Wiki page |
+| `ado-pull-requests.md` | "ADO pull request creation, reviewers, comments, and work item linking" | 4 | Lists the four PR operations covered — avoids false matches on general ADO queries |
+| `ado-error-handling.md` | "ADO API error diagnosis using error-catalog.md and HTTP status interpretation" | 5 | Points to the specific artifact (error-catalog.md) and the diagnostic approach — triggers only on error-handling tasks |
+
+---
+
+## Knowledge Item Lifecycle
+
+Knowledge items are living documents. They evolve through a predictable cycle:
+
+1. **Create** — Write the initial item based on a real need encountered in a session. Follow the structure convention and aim for score 4+ on the trigger.
+
+2. **Test in session** — Use the item in a real Devin session. Check Session Insights to verify it was retrieved when expected and not retrieved when irrelevant.
+
+3. **Refine trigger** — If the item was missed (not retrieved) or over-matched (retrieved for unrelated tasks), adjust the trigger description. Increase specificity by adding operation names or entity references.
+
+4. **Update content** — As APIs change, scripts are added, or conventions evolve, update the item body. Keep facts current — stale knowledge is worse than no knowledge.
+
+5. **Version bump** — After significant content or trigger changes, increment the version in the item metadata. This helps track when items were last validated.
+
+Repeat steps 2-5 continuously. Items that are never triggered in real sessions should be reviewed — they may have a trigger problem or may no longer be relevant.
+
+---
+
 ## Content Rules
 
 ### Do
@@ -123,6 +172,7 @@ rather than relying on trigger matching alone.
 
 - [ ] Title follows `{Topic} — Knowledge Item` convention
 - [ ] Trigger description is specific (domain + operation)
+- [ ] Trigger scores 4 or 5 on the Specificity Scoring rubric
 - [ ] Content is facts/context, not procedures
 - [ ] Tables used for structured data
 - [ ] Code blocks for commands and API calls

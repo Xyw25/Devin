@@ -27,6 +27,9 @@ When any ADO API call fails:
 | Malformed JSON Patch | Response mentions "invalid patch document" | Ensure `op`, `path`, and `value` are all present |
 | Missing `refs/heads/` | Response mentions "invalid ref" | Branch refs need `refs/heads/` prefix |
 | Invalid area path | Response mentions "area path" | Use backslash separator: `Project\Team\Area` |
+| WIQL parse error | Response mentions "syntax error" or "invalid query" | Use single quotes for string values, not double quotes. Ensure FROM clause is present. Check field names are case-correct (e.g. `System.Title` not `system.title`) |
+| PR thread creation — missing fields | Response mentions "commentType" or "parentCommentId" | Always include both `commentType` and `parentCommentId` fields when creating a PR comment thread |
+| ArtifactLink format error | Response mentions "invalid artifact link" or "invalid URL" | Use exact format `vstfs:///Git/PullRequestId/{project}%2F{repo}%2F{prId}` — forward slashes between project/repo/prId must be percent-encoded as `%2F` |
 
 ### 401 Unauthorized
 
@@ -51,6 +54,7 @@ When any ADO API call fails:
 | Wrong wiki path | "Page not found" | Paths are case-sensitive, start with `/` |
 | Wrong API version | Unexpected 404 on valid resources | Ensure `api-version=7.1` |
 | Wrong wiki ID | All wiki calls return 404 | Verify `ADO_WIKI_ID` is correct |
+| Attachment blob URL expired or invalid | 404 when downloading attachment | Blob URLs can expire or become invalid. Re-fetch the work item relations (`$expand=relations`) to get the current blob URL, then retry the download |
 
 ### 409 Conflict
 
@@ -65,6 +69,12 @@ When any ADO API call fails:
 | Cause | How to Identify | Fix |
 |-------|----------------|-----|
 | ETag mismatch | Page modified between GET and PUT | Re-GET immediately before PUT |
+
+### 413 Request Entity Too Large
+
+| Cause | How to Identify | Fix |
+|-------|----------------|-----|
+| Attachment file exceeds org limit | Response mentions "request entity too large" or file size limit (default org limit is 130 MB) | Compress or split the file before uploading. Check org attachment size settings if a lower limit is configured |
 
 ---
 
@@ -122,5 +132,6 @@ Check docs/error-catalog.md for this specific error
 | 404 | No | Fix the resource path or ID |
 | 409 | Yes | Re-GET for fresh ETag, then retry once |
 | 412 | Yes | Re-GET for fresh ETag, then retry once |
+| 413 | No | Reduce file size, then retry with smaller payload |
 | 429 | Yes | Wait and retry with backoff |
 | 500/503 | Yes | Wait briefly, retry up to 3 times |

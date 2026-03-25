@@ -1,6 +1,6 @@
 # Scheduling & Automation Guide
 
-> Version: 1.0.0
+> Version: 2.0.0
 > Created: 2026-03-25
 > Last updated: 2026-03-25
 > Sources re-verified: 2026-03-25
@@ -78,6 +78,49 @@ Standard 5-field format. **All times are UTC** (displayed in local timezone in U
 
 ---
 
+## Cron Gotchas
+
+Common mistakes that cause schedules to fire at the wrong time or too often:
+
+### UTC vs Local Time Confusion
+
+Cron expressions in Devin are evaluated in **UTC**. If you want 9am US Eastern:
+- EST (winter): `0 14 * * *` (UTC-5, so 9 + 5 = 14)
+- EDT (summer): `0 13 * * *` (UTC-4, so 9 + 4 = 13)
+
+You must update the cron expression when daylight saving time changes, or
+accept a 1-hour shift twice a year. The UI shows local time but the
+underlying expression is always UTC.
+
+### Day-of-Week Numbering
+
+- Sunday = 0 (also accepted as 7 in some implementations)
+- Monday = 1
+- Saturday = 6
+
+Common mistake: using `1-5` thinking it means Sunday-Thursday. It actually
+means **Monday-Friday**. Double-check with a cron visualizer.
+
+### Month Numbering
+
+- Months are 1-12 (January = 1, December = 12)
+- **Not** 0-11 like JavaScript's `Date.getMonth()`
+- `0 9 1 0 *` is invalid — there is no month 0
+
+### Wildcard Combinations That Fire Too Often
+
+| Expression | Intended | Actual | Fix |
+|------------|----------|--------|-----|
+| `* * * * *` | Once a day | Every minute (1440/day) | `0 9 * * *` |
+| `0 * * * *` | Once a day | Every hour (24/day) | `0 9 * * *` |
+| `*/5 * * * *` | Every 5 min during work hours | Every 5 min 24/7 (288/day) | `*/5 9-17 * * 1-5` |
+| `0 9 * * *` on all 7 days | Weekdays only | Includes weekends | `0 9 * * 1-5` |
+
+**Safety rule:** Always calculate how many times per day/week your expression
+fires before deploying. Multiply by ACU-per-run to get total cost.
+
+---
+
 ## State Persistence Between Runs
 
 Scheduled runs maintain state between executions. This is a key feature —
@@ -117,6 +160,129 @@ dedicated state file:
 ```
 DevinStorage/schedules/{task-name}-state.json
 ```
+
+---
+
+## State Persistence Patterns
+
+Detailed conventions for how scheduled tasks store and manage state across runs.
+
+### Directory Structure
+
+All schedule state files live under `DevinStorage/schedules/`:
+
+```
+DevinStorage/
+  schedules/
+    daily-standup-state.json
+    weekly-dependency-check-state.json
+    health-monitor-state.json
+    api-version-check-state.json
+```
+
+### State File Schema Conventions
+
+Every state file should follow this base schema:
+
+```json
+{
+  "taskName": "weekly-dependency-check",
+  "version": 1,
+  "lastRunAt": "2026-03-24T08:00:00Z",
+  "lastRunStatus": "success",
+  "runCount": 42,
+  "runHistory": [
+    {
+      "runAt": "2026-03-24T08:00:00Z",
+      "status": "success",
+      "acuUsed": 2.1,
+      "summary": "Checked 48 deps, 0 outdated"
+    }
+  ],
+  "taskSpecificState": {
+    "// task-specific fields go here"
+  }
+}
+```
+
+Key fields:
+- **version** — integer counter, incremented each run. Useful for detecting missed runs.
+- **lastRunAt** — ISO 8601 timestamp of the most recent execution.
+- **lastRunStatus** — `"success"`, `"failure"`, or `"partial"`.
+- **runCount** — total number of completed runs.
+- **runHistory** — array of recent run summaries (keep bounded; see trimming below).
+- **taskSpecificState** — object for whatever the task needs to track between runs.
+
+### Version Counters and Run History
+
+The `version` counter serves as a monotonic sequence number. If you expect
+daily runs and the version jumps by more than 1 between two entries, a run
+was skipped (schedule was paused, Devin was down, etc.).
+
+The `runHistory` array provides an audit trail. Each entry records:
+- When the run happened
+- Whether it succeeded
+- How many ACU it consumed
+- A one-line summary of what was done
+
+### Trimming Old State Entries
+
+To prevent state files from growing indefinitely, trim `runHistory` to the
+most recent N entries at the end of each run:
+
+```
+Max entries by frequency:
+  - Every 30 min:  keep last 48 entries  (~1 day)
+  - Every 6 hours: keep last 28 entries  (~1 week)
+  - Daily:         keep last 30 entries  (~1 month)
+  - Weekly:        keep last 12 entries  (~3 months)
+  - Monthly:       keep last 12 entries  (~1 year)
+```
+
+Trimming logic should be part of the playbook's cleanup step. Example:
+
+```
+runHistory = runHistory.slice(-30)  // keep last 30 entries
+```
+
+Old entries beyond the trim window are lost. If you need long-term history,
+export to a separate archive file or ADO Wiki page before trimming.
+
+---
+
+## Cumulative Cost Calculator
+
+Use this table to estimate the ongoing ACU cost of scheduled tasks at
+different frequencies. Multiply ACU-per-run by the number of runs in each
+time period.
+
+| Frequency | Runs/Day | ACU/Run | Daily ACU | Weekly ACU | Monthly ACU |
+|-----------|----------|---------|-----------|------------|-------------|
+| Every 30 min | 48 | 1.0 | 48.0 | 336.0 | 1,440.0 |
+| Every 6 hours | 4 | 1.0 | 4.0 | 28.0 | 120.0 |
+| Daily (weekdays) | 1 | 2.0 | 2.0 | 10.0 | 43.0 |
+| Daily (all days) | 1 | 2.0 | 2.0 | 14.0 | 60.0 |
+| Weekly | 0.14 | 3.0 | 0.43 | 3.0 | 12.9 |
+| Monthly | 0.03 | 3.0 | 0.10 | 0.70 | 3.0 |
+
+### Example: This Repo's Schedules
+
+| Schedule | Frequency | ACU/Run | Monthly ACU |
+|----------|-----------|---------|-------------|
+| Daily standup report | Weekdays | 2.0 | 43.0 |
+| Weekly dependency check | Weekly | 3.0 | 12.9 |
+| Health monitoring | Every 6 hours | 1.0 | 120.0 |
+| API version check | Weekly | 1.0 | 4.3 |
+| Feature flag cleanup | Weekly | 3.0 | 12.9 |
+| **Total** | | | **~193 ACU/month** |
+
+### Cost Control Guidelines
+
+- **High-frequency schedules (< 6 hours):** Keep ACU/run at <= 1. These add up fast.
+- **Daily schedules:** Target <= 2 ACU/run. Monthly cost = ~43-60 ACU.
+- **Weekly schedules:** Can afford up to 3-5 ACU/run. Monthly cost stays manageable.
+- **Review monthly:** Sum up all schedule costs monthly. If total exceeds your
+  budget, reduce frequency or optimize playbooks to lower ACU/run.
 
 ---
 

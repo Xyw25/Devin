@@ -129,7 +129,20 @@ Content-Type: application/json-patch+json
 
 ---
 
+### Get Test Case Details
+
+```
+GET /{org}/{project}/_apis/wit/workitems/{testCaseId}?$expand=all&api-version=7.1
+```
+
+Test cases are work items — use the standard work items GET endpoint with `$expand=all`
+to retrieve all fields including the Steps XML (`Microsoft.VSTS.TCM.Steps`).
+
+**Script:** `scripts/ado/tests/get-case-detail.sh <test-case-id>`
+
+---
+
 ## PAT Required
 
 `ADO_PAT_TESTS` — Test Management: Read & Write
-`ADO_PAT_WORKITEMS` — Work Items: Read & Write (for creating test case work items and linking)
+`ADO_PAT_WORKITEMS` — Work Items: Read & Write (for creating test case work items, linking, and getting details)

@@ -1,6 +1,6 @@
 # Azure DevOps Pull Requests API Guide
 
-> Created: 2026-03-25
+> Created: 2026-03-25, Last updated: 2026-03-25
 > API Version: 7.1
 > Source: [Azure DevOps REST API — Pull Requests](https://learn.microsoft.com/en-us/rest/api/azure-devops/git/pull-requests)
 
@@ -76,6 +76,113 @@ Content-Type: application/json
 Vote values: `10` (approved), `5` (approved with suggestions), `0` (no vote), `-5` (waiting), `-10` (rejected)
 
 **Script:** `scripts/ado/pull-requests/add-reviewer.sh <repo-id> <pr-id> <reviewer-aad-id>`
+
+### Get PR / List PRs
+
+List active PRs for a repository:
+```
+GET /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests?searchCriteria.status=active&api-version=7.1
+```
+
+Get a single PR by ID:
+```
+GET /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests/{prId}?api-version=7.1
+```
+
+Additional search criteria parameters:
+- `searchCriteria.status` — `active`, `completed`, `abandoned`, `all`
+- `searchCriteria.creatorId` — filter by creator AAD ID
+- `searchCriteria.reviewerId` — filter by reviewer AAD ID
+- `searchCriteria.sourceRefName` — filter by source branch (e.g., `refs/heads/feature`)
+- `searchCriteria.targetRefName` — filter by target branch
+
+**Script:** `scripts/ado/pull-requests/get.sh`
+
+### PR Comment Threads
+
+```
+POST /{org}/{project}/_apis/git/repositories/{repoId}/pullrequests/{prId}/threads?api-version=7.1
+Content-Type: application/json
+```
+
+**Body (general comment):**
+```json
+{
+  "comments": [
+    {
+      "parentCommentId": 0,
+      "content": "Review comment text here",
+      "commentType": 1
+    }
+  ],
+  "status": 1
+}
+```
+
+**Thread statuses:**
+| Value | Status |
+|-------|--------|
+| `1` | Active |
+| `2` | Fixed |
+| `3` | Won't Fix |
+| `4` | Closed |
+| `5` | Pending |
+
+**Inline code comments** — add `threadContext` to attach the comment to a specific file and line range:
+```json
+{
+  "comments": [
+    {
+      "parentCommentId": 0,
+      "content": "This variable should be renamed for clarity.",
+      "commentType": 1
+    }
+  ],
+  "status": 1,
+  "threadContext": {
+    "filePath": "/src/main.ts",
+    "rightFileStart": {
+      "line": 42,
+      "offset": 1
+    },
+    "rightFileEnd": {
+      "line": 42,
+      "offset": 30
+    }
+  }
+}
+```
+
+**Script:** `scripts/ado/pull-requests/add-comment.sh`
+
+### Link Work Item to PR (Post-Creation)
+
+To link a work item to an existing PR after creation, add an `ArtifactLink` relation on the work item using the PR artifact URI:
+
+```
+PATCH /{org}/{project}/_apis/wit/workitems/{workItemId}?api-version=7.1
+Content-Type: application/json-patch+json
+```
+
+```json
+[
+  {
+    "op": "add",
+    "path": "/relations/-",
+    "value": {
+      "rel": "ArtifactLink",
+      "url": "vstfs:///Git/PullRequestId/{projectId}%2F{repoId}%2F{prId}",
+      "attributes": {
+        "name": "Pull Request"
+      }
+    }
+  }
+]
+```
+
+Note: The artifact URI uses `%2F` (URL-encoded `/`) as the separator between projectId, repoId, and prId. All three values are GUIDs except prId which is an integer.
+
+**Script:** `scripts/ado/pull-requests/link-work-item.sh`
 
 ---
 

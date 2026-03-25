@@ -1,6 +1,6 @@
 # Session Sizing & ACU Optimization Guide
 
-> Version: 1.0.0
+> Version: 2.0.0
 > Created: 2026-03-25
 > Last updated: 2026-03-25
 > Sources re-verified: 2026-03-25
@@ -35,6 +35,38 @@ land in L/XL territory, redesign them into smaller chained sessions.
 
 ---
 
+## Decision Tree
+
+Use this tree to pick the right session size before writing your prompt:
+
+```
+Start
+ |
+ +--> Is the task a single API call or lookup?
+ |     YES --> XS session (< 1 ACU)
+ |     NO  --+
+ |            |
+ |            +--> Is it multi-step but within one domain?
+ |                  (e.g., read file + update file in same repo)
+ |                  YES --> S-M session (1-4 ACU)
+ |                  NO  --+
+ |                         |
+ |                         +--> Does it cross domains?
+ |                               (e.g., wiki + work items + tests)
+ |                               YES --> M-L session (2-7 ACU)
+ |                               NO  --+
+ |                                      |
+ |                                      +--> Does it require full analysis from scratch?
+ |                                            YES --> L session (4-7 ACU)
+ |                                                    Consider splitting into chained sessions
+ |                                            NO  --> Re-evaluate scope; likely S-M
+```
+
+**Rule of thumb:** If the decision tree leads you to L, look for a way to
+split the task so each piece lands in S-M territory.
+
+---
+
 ## ACU Budget Targets (This Repo)
 
 | Session | Target ACU | Size |
@@ -44,6 +76,71 @@ land in L/XL territory, redesign them into smaller chained sessions.
 | B — Documentation | <= 3 | M |
 | C — Test Coverage | <= 5 | M-L |
 | D — Triage & Linking | <= 3 (found), <= 5 (chain) | M-L |
+
+---
+
+## Real ACU Budget Examples
+
+Concrete examples showing how each session type maps to ACU consumption:
+
+| Session | Scenario | Steps | ACU |
+|---------|----------|-------|-----|
+| 0 — Pre-check | Read work item, check tag, return route | 2 API calls | ~0.5 |
+| A — Supplement | Diff 3 changed files, update analysis JSON | Read diff + write JSON | ~2.5 |
+| A — Full | Analyze new functionality from scratch (5 models, 10 entry points) | Clone, scan, produce JSON | ~5.0 |
+| B — New page | Create Wiki page from analysis JSON + update index | Read JSON, create page, update index | ~2.8 |
+| B — Update page | Refresh existing Wiki page with new analysis data | Read JSON, diff, patch page | ~1.5 |
+| C — Test cases | Generate test cases from analysis JSON + link to work items | Read JSON, write tests, post links | ~4.5 |
+| C — Supplement | Add tests for newly analyzed entry points only | Read delta, write tests | ~2.0 |
+| D — Match found | Search existing analyses, find match, link + comment | Query, match, comment | ~2.0 |
+| D — No match | Search, no match, trigger full chain (A+B+C) | Query, miss, kick off chain | ~0.5 (own cost) |
+
+---
+
+## Cumulative ACU Calculator
+
+When the full chain runs (Session 0 -> D -> A -> B -> C), total ACU depends
+on whether the functionality is new or already has analysis data.
+
+### Worst Case: All New (no prior analysis exists)
+
+```
+Session 0 (Pre-check)    =  0.5 ACU
+Session D (Triage)        =  0.5 ACU  (no match, triggers chain)
+Session A (Full analysis) =  5.0 ACU
+Session B (New Wiki page) =  3.0 ACU
+Session C (Test coverage) =  5.0 ACU
+                            ─────────
+Total worst case          = 14.0 ACU
+Rounded budget ceiling    = 16.0 ACU  (with margin)
+```
+
+### Best Case: All Current (analysis exists, minor supplement)
+
+```
+Session 0 (Pre-check)    =  0.5 ACU
+Session D (Triage)        =  2.0 ACU  (match found, link + comment)
+Session A (skipped)       =  0.0 ACU
+Session B (skipped)       =  0.0 ACU
+Session C (supplement)    =  2.0 ACU  (only if new tests needed)
+                            ─────────
+Total best case           =  4.5 ACU
+Rounded budget floor      =  4.0 ACU
+```
+
+### Typical Case: Partial Update
+
+```
+Session 0 (Pre-check)    =  0.5 ACU
+Session D (Triage)        =  0.5 ACU  (no match on new scope)
+Session A (Supplement)    =  2.5 ACU
+Session B (Update page)   =  1.5 ACU
+Session C (Supplement)    =  2.0 ACU
+                            ─────────
+Total typical case        =  7.0 ACU
+```
+
+Use these estimates when planning sprint capacity and ACU budgets.
 
 ---
 

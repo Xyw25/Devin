@@ -1,6 +1,6 @@
 # Prompt Engineering for Devin
 
-> Version: 1.0.0
+> Version: 2.0.0
 > Created: 2026-03-25
 > Last updated: 2026-03-25
 > Sources re-verified: 2026-03-25
@@ -182,3 +182,323 @@ This prevents wasted ACUs on implementation attempts based on wrong assumptions.
 - Set explicit ACU limits in the session
 - Use playbooks for recurring tasks (tested paths are cheaper)
 - Attach relevant knowledge items (reduces inference overhead)
+
+---
+
+## Cost-Per-Prompt Style Table
+
+Prompt quality directly impacts how many ACUs Devin consumes. The more
+context and specificity you provide, the less work Devin spends searching,
+guessing, and recovering from wrong assumptions.
+
+| Prompt Quality | Description | Estimated ACU Impact | Example |
+|----------------|-------------|----------------------|---------|
+| **Excellent** | All context provided: file paths, success criteria, constraints, patterns to follow, test commands | **1x budget** (baseline) | "Fix null ref in `src/auth/login.ts:42`. `user.email` is undefined when SSO token lacks email claim. Add null check, fall back to `user.upn`. Test: `npm test -- --grep login`. Don't change token parser." |
+| **Good** | Most context provided, minor gaps Devin can infer from nearby code | **1.2x budget** | "Fix the null reference in `src/auth/login.ts` around the SSO handling. `user.email` can be undefined. Add a fallback. Run the login tests to verify." |
+| **Adequate** | Some gaps — missing file paths or constraints, but objective is clear | **1.5x budget** | "There's a null reference error in the login flow when SSO tokens don't have email. Fix it and make sure tests pass." |
+| **Poor** | Vague objective, no file paths, no constraints, no verification steps | **2-3x budget** | "Fix the login bug that happens sometimes with SSO users." |
+| **Terrible** | Task dump with no context — Devin must discover everything on its own | **3-5x+ budget** | "Fix the login bug." |
+
+**Key takeaway:** Moving from a Poor prompt to an Excellent prompt can save 50-80% of ACU
+spend on a task. The 2-3 minutes spent writing a detailed prompt pays for itself immediately.
+
+---
+
+## Before/After Examples with ACU Measurements
+
+### Example 1: ADO Wiki Update
+
+**Before (Poor prompt):**
+> Update the wiki page for user login.
+
+- Devin searches for which wiki page, guesses the path, fetches wrong page first,
+  doesn't know what content to add, makes multiple round trips.
+- **Estimated cost: ~3.5 ACU**
+
+**After (Excellent prompt):**
+> Update the Wiki page at `/Functionalities/user-login`.
+> Use `scripts/ado/wiki/get-page.sh "Functionalities/user-login"` to fetch the current page and ETag.
+> Add a new row to the Associated Work Items table: `| #5678 | SSO email fallback | Bug | Resolved |`.
+> Update the User Workflow section step 3 to mention the email -> UPN fallback.
+> Use `scripts/ado/wiki/update-page.sh` with the ETag to push the update.
+
+- Devin follows the exact steps, no searching required.
+- **Estimated cost: ~1.2 ACU**
+- **Savings: ~65%**
+
+**What changed:** Added the exact wiki path, specified which scripts to use, described the
+precise content changes, and included the ETag workflow to avoid update conflicts.
+
+---
+
+### Example 2: Bug Investigation
+
+**Before (Poor prompt):**
+> Figure out why orders are failing.
+
+- Devin searches the entire codebase for "order" and "fail," reads dozens of files,
+  investigates irrelevant error paths, eventually asks clarifying questions.
+- **Estimated cost: ~5 ACU**
+
+**After (Excellent prompt):**
+> Investigate why orders with `status: "pending"` in the `orders` table are not
+> transitioning to `"confirmed"` after payment webhook arrives.
+> Start from: `src/webhooks/payment.ts` and `src/services/order-state-machine.ts`.
+> Check the logs for `PaymentConfirmed` events in the last 24 hours.
+> Expected: webhook triggers `confirmOrder()` which updates status.
+> Don't modify any code — report findings as a comment on work item #8901.
+
+- Devin goes directly to the right files, checks the specific code path, reports findings.
+- **Estimated cost: ~1.5 ACU**
+- **Savings: ~70%**
+
+**What changed:** Named the exact symptom, provided entry-point file paths, described the
+expected behavior, scoped the investigation to read-only, and specified the output location.
+
+---
+
+### Example 3: Test Case Creation
+
+**Before (Poor prompt):**
+> Add tests for the refund feature.
+
+- Devin searches for refund-related code, guesses which scenarios to cover,
+  writes tests in the wrong location or with the wrong testing pattern, misses edge cases.
+- **Estimated cost: ~4 ACU**
+
+**After (Excellent prompt):**
+> Create test cases for the partial-refund functionality in ADO.
+> Reference: `analyses/commerce/partial-refund.json` for entry points, models, and edge cases.
+> Create these 4 test cases using `scripts/ado/tests/create-case.sh`:
+> 1. Successful partial refund (amount < order total)
+> 2. Partial refund exceeding order total (should fail with validation error)
+> 3. Partial refund on already-fully-refunded order (should fail)
+> 4. Concurrent partial refund requests (should handle race condition)
+> Link all test cases to work item #4567 via TestedBy-Forward relation.
+
+- Devin reads the analysis file, creates exactly 4 test cases with the right script, links them.
+- **Estimated cost: ~1.5 ACU**
+- **Savings: ~62%**
+
+**What changed:** Referenced the analysis JSON for context, listed the exact test scenarios,
+specified the creation script, and included the work item linkage requirement.
+
+---
+
+### Example 4: PR Creation
+
+**Before (Poor prompt):**
+> Create a PR for the changes.
+
+- Devin guesses the branch name, writes a generic PR title and description,
+  doesn't know which work items to link, misses required reviewers.
+- **Estimated cost: ~2 ACU**
+
+**After (Excellent prompt):**
+> Create a PR from branch `feature/sso-email-fallback` to `main`.
+> Title: "Add UPN fallback when SSO email claim is missing"
+> Description should include:
+> - Summary: Added null check in `src/auth/login.ts` to fall back to `user.upn`
+> - Testing: All existing login tests pass, added 2 new test cases for UPN fallback
+> - Work item: Link to #5678 with "Fixes AB#5678" in the description
+> Add reviewers: @team-auth
+> Set to auto-complete with squash merge.
+
+- Devin creates the PR exactly as specified in one pass.
+- **Estimated cost: ~0.8 ACU**
+- **Savings: ~60%**
+
+**What changed:** Provided the branch name, title, structured description content, work item
+linkage syntax, reviewer list, and merge strategy.
+
+---
+
+## Prompt Complexity Tiers
+
+Use these tiers to estimate ACU cost before starting a session, and to decide
+whether a task should be split into smaller sessions.
+
+### Tier 1: XS (<1 ACU)
+
+**Single-step, single-API operations.**
+
+These are the simplest tasks — one action, one output, no decisions.
+
+Examples:
+- Fetch a wiki page and report its contents
+- Create a single work item with provided fields
+- Run a specific test suite and report results
+- Read a file and summarize its structure
+
+Prompt pattern:
+```
+Do [one thing] at [exact location]. Output: [where to put result].
+```
+
+---
+
+### Tier 2: S-M (1-3 ACU)
+
+**Multi-step operations within one domain.**
+
+These involve several sequential steps but stay within a single system or codebase area.
+
+Examples:
+- Fix a bug in one file and run its tests
+- Create 3-5 test cases in ADO linked to a work item
+- Update a wiki page with content from an analysis file
+- Analyze one functionality and write the JSON output
+
+Prompt pattern:
+```
+Do [objective] in [domain/system].
+Steps: [ordered list of actions].
+Reference: [files, patterns, scripts].
+Verify: [success criteria].
+```
+
+---
+
+### Tier 3: M-L (3-5 ACU)
+
+**Cross-domain operations with handoffs between systems.**
+
+These touch multiple systems (e.g., codebase + ADO + wiki) and require
+coordinating outputs between them.
+
+Examples:
+- Analyze code, create ADO test cases, and update wiki page
+- Investigate a bug across multiple services and post findings to ADO
+- Create a PR, link work items, and update documentation
+
+Prompt pattern:
+```
+Do [objective] across [system A] and [system B].
+Step 1: [action in system A] -> produces [artifact].
+Step 2: Use [artifact] to [action in system B].
+Step 3: [verification across both systems].
+Reference: [scripts, patterns, schemas for each system].
+```
+
+**Tip:** If the task naturally splits into independent phases, run them as
+separate Tier 2 sessions instead. The investigation-first pattern is a
+good example of this split.
+
+---
+
+### Tier 4: L+ (5+ ACU)
+
+**Full analysis chains — these should almost always be split.**
+
+Tasks at this tier involve deep analysis, multiple systems, and complex
+decision-making. Running them as a single session risks context loss,
+wrong assumptions compounding, and high ACU waste on recovery.
+
+Examples:
+- Full functionality analysis + wiki creation + test case creation + PR
+- End-to-end feature implementation across multiple services
+- Large-scale refactoring with test updates and documentation
+
+**Split strategy:**
+```
+Session A (Tier 2): Analyze and produce artifacts
+  -> Output: analyses/[product]/[slug].json
+
+Session B (Tier 2): Create documentation from artifacts
+  -> Input: analyses/[product]/[slug].json
+  -> Output: Wiki page at /Functionalities/[slug]
+
+Session C (Tier 2): Create test cases from artifacts
+  -> Input: analyses/[product]/[slug].json
+  -> Output: ADO test cases linked to work item
+
+Session D (Tier 1): Create PR linking everything together
+```
+
+**Rule of thumb:** If you estimate a task at Tier 4, spend 5 minutes
+planning the split before launching any sessions. The planning time
+pays for itself in ACU savings and result quality.
+
+---
+
+## Context Loading Patterns
+
+One of the most effective ways to reduce ACU cost is to point Devin at
+existing artifacts instead of asking it to discover or recreate context.
+These patterns show how to reference different types of stored knowledge.
+
+### Reference DevinStorage JSON Files
+
+Analysis files in `DevinStorage/analyses/` contain pre-computed context
+about functionalities, entry points, models, and relationships.
+
+```
+Reference: Read `DevinStorage/analyses/commerce/order-cancellation.json`
+for the list of entry points, models, and API routes related to order
+cancellation. Use this as your starting context instead of searching
+the codebase.
+```
+
+**When to use:** Any task that builds on a previously analyzed functionality.
+The JSON file eliminates the need for Devin to re-analyze the codebase.
+
+### Reference Wiki Pages
+
+Wiki pages contain human-verified documentation. Point Devin to specific
+pages to load context about workflows, architecture, or business rules.
+
+```
+Reference: Fetch the wiki page at `/Functionalities/user-login` using
+`scripts/ado/wiki/get-page.sh "Functionalities/user-login"` to understand
+the current login workflow before making changes.
+```
+
+**When to use:** Before modifying a feature that has existing documentation.
+The wiki page gives Devin the "current state" without re-discovery.
+
+### Reference Scripts by Path
+
+DevinStorage scripts are tested, reliable automation. Always reference them
+by exact path rather than describing what they do.
+
+```
+Use `scripts/ado/wiki/update-page.sh` to push the wiki update.
+Use `scripts/ado/tests/create-case.sh` to create each test case.
+Use `scripts/ado/workitems/add-comment.sh` to post the findings.
+```
+
+**When to use:** Any task that interacts with ADO. The scripts handle
+authentication, error handling, and API formatting — Devin should use
+them rather than making raw API calls.
+
+### Reference Error Catalog Entries
+
+The error catalog maps known errors to their root causes and fixes.
+Point Devin to specific entries to skip redundant investigation.
+
+```
+Reference: Check `DevinStorage/error-catalog/ado-wiki-412.md` for the
+known fix when wiki updates return HTTP 412 (ETag mismatch). Follow the
+retry pattern described there instead of investigating from scratch.
+```
+
+**When to use:** When a task involves an area where errors have been
+previously cataloged. This prevents Devin from spending ACUs rediscovering
+known issues and their solutions.
+
+### Combined Context Loading
+
+For complex tasks, load multiple context sources in the prompt:
+
+```
+Context loading:
+1. Read `analyses/commerce/partial-refund.json` for functionality map
+2. Fetch wiki page `/Functionalities/partial-refund` for current docs
+3. Check `error-catalog/payment-webhook-timeout.md` for known issues
+
+Task: [your actual objective using all the loaded context]
+```
+
+**Key principle:** Every artifact you reference in the prompt is context
+Devin does not need to discover on its own. Discovery is the most expensive
+part of any session — eliminate it wherever possible.

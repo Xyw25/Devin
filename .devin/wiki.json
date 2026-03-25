@@ -24,7 +24,11 @@
     },
     {
       "topic": "Script Library Convention",
-      "content": "All ADO operations use hardened scripts in scripts/ado/. Playbooks reference scripts, never raw curl commands. Scripts handle auth headers, Content-Types, URL encoding, and error checking consistently."
+      "content": "28 ADO operation scripts in scripts/ado/ organized by domain: work-items/ (11 scripts), pull-requests/ (6 scripts), wiki/ (3 scripts), tests/ (4 scripts), repos/ (3 scripts). Playbooks reference scripts, never raw curl commands. Scripts handle auth, Content-Types, URL encoding consistently."
+    },
+    {
+      "topic": "ADO Operations Coverage",
+      "content": "Full ADO interaction catalog: work items (CRUD, comments, relations, WIQL queries, attachments), pull requests (create, update, review, comment, link work items), wiki pages (CRUD with ETag), test management (plans, suites, cases), repositories (list, get, clone). All 28 operations have dedicated scripts."
     },
     {
       "topic": "Scope Limiting Strategy",

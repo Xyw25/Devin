@@ -1,6 +1,6 @@
 # Devin Best Practices — Master Guide
 
-> Version: 1.0.0
+> Version: 2.0.0
 > Created: 2026-03-25
 > Last updated: 2026-03-25
 > Sources re-verified: 2026-03-25
@@ -192,3 +192,94 @@ Have agents validate output before committing:
 - Linters
 - Test suites
 - All should run in the session before artifacts are finalized
+
+---
+
+## 11. Attachment Handling
+> Added: 2026-03-25
+
+When processing bugs, always check for and download attachments. Bug reports
+frequently include screenshots, log files, stack traces, and other evidence
+that is essential for understanding and reproducing the issue.
+
+- **List attachments** — use `scripts/ado/work-items/get-attachments.sh` to retrieve the list of attachments on a work item
+- **Download attachments** — use `download-attachment.sh` to fetch individual files locally for inspection
+- Always review attachments before starting a fix — they often contain the key clue
+- Screenshots may show the exact UI state or error dialog
+- Log files may contain stack traces and timestamps that narrow the root cause
+- If a bug has zero attachments, consider requesting them from the reporter before spending ACUs on guesswork
+
+---
+
+## 12. WIQL Queries
+> Added: 2026-03-25
+
+Use WIQL (Work Item Query Language) to find related work items in batch rather
+than fetching them one at a time.
+
+- **Script:** `scripts/ado/work-items/query.sh`
+- WIQL supports `SELECT`, `FROM`, `WHERE`, `ORDER BY`, and `ASOF` clauses against work item fields
+
+### Common Query Patterns
+
+| Pattern | Use Case |
+|---------|----------|
+| Find all bugs in an area path | `WHERE [System.WorkItemType] = 'Bug' AND [System.AreaPath] UNDER 'Project\Area'` |
+| Find all items with a specific tag | `WHERE [System.Tags] CONTAINS 'devin-process'` |
+| Find items by keyword | `WHERE [System.Title] CONTAINS 'login'` |
+| Find recent items assigned to you | `WHERE [System.AssignedTo] = @Me AND [System.ChangedDate] > @Today - 7` |
+
+- Combine clauses for precise filtering — area path + state + tag is a common triple
+- Use WIQL results to build batch processing workflows across multiple work items
+
+---
+
+## 13. PR Lifecycle
+> Added: 2026-03-25
+
+Pull requests are a core deliverable for code-change sessions. Follow the full
+lifecycle to ensure quality and traceability.
+
+### Creating PRs
+- Use `scripts/ado/repos/` utilities to interact with repositories
+- Always target the correct base branch — confirm before creating
+- Set the PR to draft if the work is still in progress
+
+### Linking to Work Items
+- Every PR must link to at least one work item (bug, task, or user story)
+- Use the `artifactId` relation format to create the link via API
+- Linked work items automatically show the PR in their Development section
+
+### PR Descriptions
+- Always include functionality context from the relevant Wiki page in the PR description
+- Summarize what changed, why it changed, and how to verify
+- Reference the specific knowledge items and playbook used in the session
+
+### Adding Reviewers
+- Add at least one required reviewer before publishing (taking out of draft)
+- Use team aliases where available to ensure coverage
+- If the change touches a specific area, add the area owner as reviewer
+
+### Adding Comments
+- Use PR comments to annotate non-obvious decisions
+- Thread comments on specific file lines for targeted review context
+- Respond to reviewer feedback within the same session if ACU budget allows
+
+---
+
+## 14. Repository Operations
+> Added: 2026-03-25
+
+Repository operations are needed for multi-repo workflows, cloning, and
+discovery of project structure.
+
+- **Scripts:** `scripts/ado/repos/` contains utilities for repo interactions
+- **List repositories** — enumerate all repos in a project to find the correct target
+- **Get repo details** — fetch metadata including default branch, size, and remote URL
+- **Construct clone URLs** — build HTTPS clone URLs using the organization, project, and repo name; authenticate via PAT in the URL or credential helper
+
+### Key Considerations
+- Always verify the repo name and project before cloning — typos waste ACUs
+- Use the default branch from repo metadata rather than assuming `main` or `master`
+- For cross-repo work, clone into separate directories and reference paths explicitly in prompts
+- Large repos may benefit from shallow clones (`--depth 1`) to save time in short sessions

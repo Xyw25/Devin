@@ -30,9 +30,18 @@ BODY=$(jq -n \
     "status": $status
   }')
 
-curl -s \
+RESPONSE=$(curl -s -w "\n%{http_code}" \
   -X POST \
   -H "${ADO_AUTH_HEADER}" \
   -H "Content-Type: application/json" \
   -d "${BODY}" \
-  "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/git/repositories/${REPO_ID}/pullrequests/${PR_ID}/threads?api-version=7.1"
+  "${ADO_ORG_URL}/${ADO_PROJECT}/_apis/git/repositories/${REPO_ID}/pullrequests/${PR_ID}/threads?api-version=7.1")
+HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+RESP_BODY=$(echo "$RESPONSE" | sed '$d')
+if [[ "$HTTP_CODE" =~ ^2 ]]; then
+  echo "$RESP_BODY"
+else
+  echo "ERROR: PR comment failed (HTTP ${HTTP_CODE})" >&2
+  echo "$RESP_BODY" >&2
+  exit 1
+fi

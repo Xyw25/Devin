@@ -1,12 +1,14 @@
 # Session PR-Creation — Pull Request Lifecycle
 
+> Version: 2.1.0
+> Last updated: 2026-03-26
+
 ## Purpose
 
 Create a well-formed pull request with enriched description, work item links,
 reviewers, and functionality context pulled from the Wiki page.
 
 **Schedule:** On-demand (triggered manually or after implementation session)
-**Target ACU:** <= 3
 
 ---
 
@@ -23,8 +25,13 @@ Extract: title, description, type, area path, tags, related work items.
 
 ### Step 2: Identify the functionality from DevinStorage
 
-Check `analyses/` for a matching JSON file using keywords from the work item.
-If found, read the analysis for: `functionality`, `userWorkflow`, `logic`, `wikiPagePath`.
+Search `analyses/` for a matching JSON file:
+1. Extract keywords from the work item title and description (nouns, proper names, route paths, technical terms — exclude common words like "the", "bug", "fix", "issue")
+2. For each JSON file in `analyses/*/`, compare extracted keywords against the file's `keywords` array
+3. If 2+ keywords overlap, use that analysis file
+4. If no match, skip to Step 4 (PR can still be created without functionality context)
+
+If found, read: `functionality`, `userWorkflow`, `logic`, `wikiPagePath`.
 
 ### Step 3: Read the Wiki page for additional context
 
@@ -43,6 +50,15 @@ bash scripts/ado/repos/get.sh "$REPO_NAME"
 ```
 
 Capture the repo ID (GUID) for PR creation.
+
+### Step 4a: Validate branches exist
+
+Before creating the PR, verify both branches exist:
+```bash
+git ls-remote --heads origin "$SOURCE_BRANCH" | grep -q . || echo "ERROR: Source branch not found"
+git ls-remote --heads origin "$TARGET_BRANCH" | grep -q . || echo "ERROR: Target branch not found"
+```
+If either branch does not exist, post error comment on work item and exit.
 
 ### Step 5: Create the PR
 
@@ -92,7 +108,6 @@ Commit and push DevinStorage.
 
 ## Specifications
 
-- **ACU Budget:** <= 3
 - **PATs:** `ADO_PAT_WORKITEMS`, `ADO_PAT_WIKI`, `ADO_PAT_CODE`
 - **Inputs:** Work item ID, source branch, target branch, reviewer AAD IDs
 - **Outputs:** PR created with work item link, work item comment, DevinStorage update
@@ -115,6 +130,7 @@ Commit and push DevinStorage.
 - Keep PR descriptions under 4000 characters — ADO truncates longer descriptions
 - If the Wiki page has a tests section, include test coverage status in the PR description
 - For draft PRs, add `"isDraft": true` to the PR body (modify create.sh call)
+- If REVIEWER_IDS is empty, pass an empty string to create.sh — the script handles empty reviewer lists gracefully.
 
 ---
 

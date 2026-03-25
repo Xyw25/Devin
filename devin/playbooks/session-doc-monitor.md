@@ -1,5 +1,8 @@
 # Session Doc-Monitor — Daily Devin Documentation Monitor
 
+> Version: 2.1.0
+> Last updated: 2026-03-26
+
 ## Purpose
 
 Automated daily session that monitors all known Devin documentation sources
@@ -28,6 +31,17 @@ Parse and load:
 - `sources` array — all URLs to check with their `lastKnownState`
 - `documentVersions` — current version of each local file
 - `pendingNewTopics` — topics flagged from prior runs for manual review
+
+**`lastKnownState` structure per source:**
+```json
+{
+  "title": "string — page <title> tag content",
+  "headings": ["string — H1 and H2 text extracted from the page"],
+  "lastModifiedIndicator": "string — any date/version found on the page",
+  "blogTitles": ["string — latest 5 post titles (blog sources only)"]
+}
+```
+On first run, `lastKnownState` is empty string `""`. The monitor populates it after the first successful fetch. Subsequent runs compare the new extraction against the stored state to detect changes.
 
 ### Step 2: Pull latest repository state
 

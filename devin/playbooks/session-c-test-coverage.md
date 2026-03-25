@@ -1,7 +1,7 @@
 # Session C — Test Coverage
 
-> Version: 2.0.0
-> Last updated: 2026-03-25
+> Version: 2.1.0
+> Last updated: 2026-03-26
 
 ## Purpose
 Find existing test cases, evaluate coverage, create new ones if needed,
@@ -27,8 +27,14 @@ If tests already linked AND no new analysis was performed -> skip creation,
 still update Wiki if needed.
 
 ### Step 3: Search codebase for existing tests
-Search target repository for test files related to this functionality.
-Read and evaluate what they cover and what they miss.
+Search the target repository for test files related to this functionality:
+```bash
+find <repository-root> -type f \( -name '*test*' -o -name '*spec*' -o -name '*.test.*' -o -name '*.spec.*' \) | head -30
+```
+Filter results to files near the entry points listed in the analysis JSON.
+Read matching test files and note which user workflow steps they cover.
+
+Note: `PLAN_ID` and `SUITE_ID` in Step 4 come from the `get-plans.sh` output. Parse the JSON response to extract `id` fields from the plans and suites arrays.
 
 ### Step 4: List ADO test plans and cases
 ```bash
@@ -38,6 +44,12 @@ bash scripts/ado/tests/get-cases.sh "$PLAN_ID" "$SUITE_ID"
 ```
 
 ### Step 5: Create new test cases if gaps exist
+
+A **coverage gap** exists when any of these are true:
+- A user workflow step from the analysis JSON has no corresponding test case
+- An entry point has no test exercising its primary code path
+- A known error scenario (from `knownIssues`) is not tested
+
 ```bash
 bash scripts/ado/tests/create-case.sh "$TITLE" "$AREA_PATH" "$STEPS_XML"
 ```
@@ -73,11 +85,12 @@ If new test cases were created, update the analysis JSON and commit/push.
 ```bash
 source scripts/ado/auth.sh "$ADO_PAT_WORKITEMS"
 bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
-  "<p>Test coverage assessment complete.<br/>
-  Tests found: [X]<br/>
-  Tests created: [Y]<br/>
-  Coverage: [assessment]<br/>
-  Should existing tests have caught this? [yes/no and why]</p>"
+  "<p><b>Devin Test Coverage Assessment</b></p>
+  <p><b>Existing tests found:</b> {count}</p>
+  <p><b>New tests created:</b> {count}</p>
+  <p><b>Tests linked (TestedBy):</b> {total}</p>
+  <p><b>Coverage assessment:</b> {Adequate|Gaps identified}</p>
+  <p><b>Should existing tests have caught this?</b> {Yes/No — explanation}</p>"
 ```
 
 > Comment format: see schemas/work-item-comment.template.md
@@ -104,8 +117,6 @@ bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" \
 
 ## Advice
 
-- "Coverage gap" means: a user workflow step or entry point in the analysis JSON that has no corresponding test case.
-- To search for existing tests in the codebase, look for files matching: `*test*`, `*spec*`, `*.test.*`, `*.spec.*` in directories near the entry points.
 - When creating test cases, title format: "Verify {what} when {condition}" — e.g., "Verify login succeeds when credentials are valid".
 - Test steps XML: use `<steps><step><parameterizedString>` format (see test-case-creation.md). Full format: see schemas/test-case-steps.xml
 - If no test plans exist in the project, create the test case work item without suite linkage and note this in the comment.

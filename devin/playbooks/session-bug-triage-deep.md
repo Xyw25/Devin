@@ -1,5 +1,8 @@
 # Session Bug-Triage-Deep — Deep Bug Analysis
 
+> Version: 2.1.0
+> Last updated: 2026-03-26
+
 ## Purpose
 
 Deep-dive triage for bugs specifically. Beyond Session D's basic linking — this session
@@ -7,7 +10,6 @@ reads repro steps, downloads attachments, correlates with functionality document
 pulls blame history, and produces a first-pass root cause interpretation.
 
 **Schedule:** On-demand (triggered for complex bugs after Session D)
-**Target ACU:** <= 5
 
 ---
 
@@ -37,14 +39,16 @@ Look for: developer notes, test results, user-reported details, prior investigat
 bash scripts/ado/work-items/get-attachments.sh "$WORK_ITEM_ID"
 ```
 
-For each attachment:
-- Screenshots: note what they show (error dialogs, UI state, console output)
-- Log files: download and scan for error patterns
-- Other files: note their names and purposes
+Download all attachments to `/tmp/attachments/`. Organize: images → `/tmp/attachments/images/`, logs → `/tmp/attachments/logs/`, other → `/tmp/attachments/other/`.
 
 ```bash
-bash scripts/ado/work-items/download-attachment.sh "$ATTACHMENT_URL" "/tmp/$FILENAME"
+mkdir -p /tmp/attachments/images /tmp/attachments/logs /tmp/attachments/other
+bash scripts/ado/work-items/download-attachment.sh "$ATTACHMENT_URL" "/tmp/attachments/{category}/$FILENAME"
 ```
+
+For images, note the filename — if it contains descriptive keywords (e.g., 'error-dialog', 'login-screen'), record them. Otherwise, note filename and indicate human review needed.
+
+For logs, search for patterns: stack traces, `Exception`, `Error`, `FATAL`, `null`, `undefined`.
 
 ### Step 4: Match to known functionality
 
@@ -64,13 +68,15 @@ bash scripts/ado/wiki/get-page.sh "/Functionalities/${SLUG}"
 source scripts/ado/auth.sh "$ADO_PAT_CODE"
 ```
 
-Using the analysis JSON entry points and the bug's repro steps:
-- Identify the likely code path involved
-- Check git blame on the most relevant files (last 10 commits)
-- Look for recent changes that could have introduced the bug
-- Check if the affected area has existing test coverage
+Algorithm:
+1. Read `entryPoints` from the analysis JSON
+2. For each repro step, search for matching function names or route paths in the entry points
+3. Read the matching source file(s)
+4. Trace calls one level deep from those functions
+5. Run `git log --oneline -10 -- {file}` on the most relevant files to find recent changes
+6. Check if any recent commits (last 10) touch the suspected code path
 
-**Scope limits:** Same as Session A — one level deep, max 5 models, max 10 entry points.
+Scope limits: one level deep, max 5 models, max 10 entry points.
 
 ### Step 6: Check existing test coverage
 
@@ -90,8 +96,15 @@ source scripts/ado/auth.sh "$ADO_PAT_WORKITEMS"
 bash scripts/ado/work-items/comment.sh "$WORK_ITEM_ID" "$FINDINGS_HTML"
 ```
 
-Comment must include all 6 sections defined in the findings template.
-Full format: see `schemas/bug-findings-comment.template.md`
+The findings comment MUST include all 6 sections:
+1. **Functionality Match** — which area, confidence level, keyword overlap count
+2. **Likely Root Cause** — suspect files with paths, recent commits that may have caused it
+3. **Attachment Analysis** — what each attachment showed, or "No attachments found"
+4. **Test Coverage Gap** — existing tests count, whether they should have caught this, regression yes/no
+5. **Suggested Fix Location** — specific `file:method` paths
+6. **Suggested New Tests** — test case titles that would prevent recurrence
+
+Full HTML format: see `schemas/bug-findings-comment.template.md`
 
 ### Step 8: Update DevinStorage
 
@@ -103,7 +116,6 @@ Commit and push DevinStorage.
 
 ## Specifications
 
-- **ACU Budget:** <= 5
 - **PATs:** `ADO_PAT_WORKITEMS`, `ADO_PAT_WIKI`, `ADO_PAT_CODE`, `ADO_PAT_TESTS`
 - **Inputs:** Work item ID (must be a Bug type)
 - **Outputs:** Detailed findings comment, DevinStorage update
@@ -117,7 +129,7 @@ Commit and push DevinStorage.
 | Work item is not a Bug | Post comment noting wrong type, exit |
 | No functionality match | Post comment with partial matches, suggest Session A |
 | Scope limits hit | Post partial findings, note what wasn't analyzed |
-| ACU approaching limit | Post what was found so far, exit |
+| Repro steps missing or fewer than 2 sentences | Post comment noting insufficient repro steps and exit without root cause hypothesis |
 
 ---
 
